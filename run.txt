@@ -1,1 +1,1 @@
-for using dev -> NPM run dev
+for using dev -> npm run dev
