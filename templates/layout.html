@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% if title %}
+    <title>Tweeter - {{title}}</title>
+    {% else %}
+    <title>Tweeter</title>  
+    {% endif %}
+</head>
+<body>
+    {%block content%} {% endblock %}
+</body>
+</html>
