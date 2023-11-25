@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
     {% if title %}
     <title>Tweeter - {{title}}</title>
     {% else %}
@@ -9,5 +10,6 @@
 </head>
 <body>
     {%block content%} {% endblock %}
+    <h1 class="text-2xl">pp </h1>
 </body>
 </html>
