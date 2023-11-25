@@ -1,0 +1,20 @@
+[{
+    "_id": "user_id",
+    "username": "user123",
+    "email": "user@example.com",
+    "avatar": "route",
+    "password": "",
+    "createdAt": ""
+},
+{
+    "_id": "post_id",
+    "title": "Title",
+    "content": "Obsah prispevku",
+    "author": "user_id",
+    "createdAt": "",
+    "updatedAt": "",
+    "statistics": {
+        "komentare": 5,
+        "likesCount": 15
+    }
+}]
