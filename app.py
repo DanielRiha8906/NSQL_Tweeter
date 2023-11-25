@@ -33,3 +33,9 @@ def about():
     return render_template('about.html', title='About')
 if __name__ == '__main__':
     app.run(debug=True)
+@app.route("/profile")
+def profile():
+    return render_template('profile.html')
+@app.route("/register")
+def about():
+    return render_template('register.html')
