@@ -9,14 +9,12 @@
     {% endif %}
 </head>
 <body class="bg-black/20">
-    <nav>
-        <a href="http://127.0.0.1:5000">Home</a>
-        <a href="http://127.0.0.1:5000/about">About</a>
-        <a href="http://127.0.0.1:5000/profile">My profile</a>
-        <a href="http://127.0.0.1:5000/register">Register</a>
+    <nav class="flex gap-2 py-2">
+        <a href="http://127.0.0.1:5000" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">Home</a>
+        <a href="http://127.0.0.1:5000/about" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">About</a>
+        <a href="http://127.0.0.1:5000/profile" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">My profile</a>
+        <a href="http://127.0.0.1:5000/register" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">Register</a>
     </nav>
     <div class="conatiner">{%block content%} {% endblock %}</div>
-    <h1 class="text-4xl font-bold hover:text-red-800 w-min
-    ">pp </h1>
 </body>
 </html>
