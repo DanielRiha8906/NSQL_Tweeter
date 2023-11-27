@@ -591,6 +591,10 @@ video {
   width: 24rem;
 }
 
+.w-\[40rem\] {
+  width: 40rem;
+}
+
 .w-max {
   width: -moz-max-content;
   width: max-content;
@@ -601,16 +605,12 @@ video {
   width: min-content;
 }
 
-.w-\[40rem\] {
-  width: 40rem;
+.flex-shrink {
+  flex-shrink: 1;
 }
 
 .flex-shrink-0 {
   flex-shrink: 0;
-}
-
-.flex-shrink {
-  flex-shrink: 1;
 }
 
 .border-collapse {
@@ -668,8 +668,13 @@ video {
   background-color: rgb(0 0 0 / var(--tw-bg-opacity));
 }
 
-.bg-black\/20 {
-  background-color: rgb(0 0 0 / 0.2);
+.bg-blue-900 {
+  --tw-bg-opacity: 1;
+  background-color: rgb(30 58 138 / var(--tw-bg-opacity));
+}
+
+.bg-blue-900\/75 {
+  background-color: rgb(30 58 138 / 0.75);
 }
 
 .bg-pink-400 {
@@ -687,13 +692,8 @@ video {
   background-color: rgb(239 68 68 / var(--tw-bg-opacity));
 }
 
-.bg-blue-900\/75 {
-  background-color: rgb(30 58 138 / 0.75);
-}
-
-.bg-blue-900 {
-  --tw-bg-opacity: 1;
-  background-color: rgb(30 58 138 / var(--tw-bg-opacity));
+.bg-black\/75 {
+  background-color: rgb(0 0 0 / 0.75);
 }
 
 .p-4 {
@@ -760,9 +760,9 @@ video {
   line-height: 1.5rem;
 }
 
-.text-pink-400 {
+.text-gray-300 {
   --tw-text-opacity: 1;
-  color: rgb(244 114 182 / var(--tw-text-opacity));
+  color: rgb(209 213 219 / var(--tw-text-opacity));
 }
 
 .text-gray-400 {
@@ -770,14 +770,14 @@ video {
   color: rgb(156 163 175 / var(--tw-text-opacity));
 }
 
+.text-pink-400 {
+  --tw-text-opacity: 1;
+  color: rgb(244 114 182 / var(--tw-text-opacity));
+}
+
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.text-gray-300 {
-  --tw-text-opacity: 1;
-  color: rgb(209 213 219 / var(--tw-text-opacity));
 }
 
 .underline {
@@ -808,10 +808,6 @@ video {
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.hover\:box-content:hover {
-  box-sizing: content-box;
-}
-
 .hover\:bg-purple-400:hover {
   --tw-bg-opacity: 1;
   background-color: rgb(192 132 252 / var(--tw-bg-opacity));
@@ -820,6 +816,11 @@ video {
 .hover\:text-blue-800:hover {
   --tw-text-opacity: 1;
   color: rgb(30 64 175 / var(--tw-text-opacity));
+}
+
+.hover\:text-pink-600:hover {
+  --tw-text-opacity: 1;
+  color: rgb(219 39 119 / var(--tw-text-opacity));
 }
 
 .group:hover .group-hover\:text-gray-300 {
