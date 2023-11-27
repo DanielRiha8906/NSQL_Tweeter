@@ -6,6 +6,9 @@ from random import choice
 load_dotenv()
 
 
+
+# print(os.getenv("CONNECTION_STRING"))
+
 def DB(collectionName="Terminy"):
     # Provide the mongodb atlas url to connect python to mongodb using pymongo
     CONNECTION_STRING = os.getenv("CONNECTION_STRING")
@@ -16,4 +19,4 @@ def DB(collectionName="Terminy"):
     collection = dbname[collectionName]
     return collection
 
-#DB("Collection").insert_one({"tester":"pokus"})
+# DB("Collection").insert_one({"_id":123331,"tester":"pokus"})
