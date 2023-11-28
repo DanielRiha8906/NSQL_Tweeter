@@ -85,15 +85,14 @@ def loginUser(username, password):
     return user
 
 def recentTwentyTweets():
-    #!TODO - Funkce vraci poslednich 20 tweetu zaznamu v databazi 
-    pass
+    last20 = tweety.find().sort("dateTweeted", -1).limit(20)
+    return last20
 
 
 
 
 # print(loginUser("hokus", "pokus"))
 # addTweet(1, "Test tweet")
+#for tweet in recentTwentyTweets():
+#    print(tweet["dateTweeted"])
 
-# for tweet in myTweets(18):
-#    print(tweet)
-# print(whoAmI(1))
