@@ -44,9 +44,9 @@ def profile():
     return render_template('profile.html', posts=posts)
 
 
-@app.route("/register")
+@app.route("/login")
 def register():
-    return render_template('register.html')
+    return render_template('login.html')
 
 
 if __name__ == '__main__':

@@ -17,6 +17,9 @@ class F:
         self.uzivatele = DB("Users")
         self.tweety = DB("MockTweets")
 
+#!TODO
+# přidat do addTweet i název tweetu!
+# jako je na twitteru, popis tweetu - je dobrovolný
     def addTweet(self, userID, body):
         """Funkce pro pridani tweetu ktera bere jako argument ID uzivatele a obsahu tweetu,
         pokud neexistuje tak mu neumozni prispevek vytvorit.
@@ -31,6 +34,7 @@ class F:
             "_id": self.tweety.count_documents({}) + 1,
             "userID": userID,
             "userName": currentUser["userName"],
+        # add title!
             "tweetContent": body,
             "dateTweeted": datetime.now().strftime("%H:%M:%d:%m:%Y"),
             "likesCount": 0,
