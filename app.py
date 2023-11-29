@@ -1,5 +1,7 @@
 from flask import Flask, render_template
 
+from BackEnd.classes.user import *
+
 app = Flask(__name__)
 
 posts = [
