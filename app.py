@@ -5,8 +5,8 @@ app = Flask(__name__)
 posts = [
     {
         'author': 'Alexander',
-        'title': 'Pp poo poo',
-        'content': 'It realy do be',
+        'title': 'brb',
+        'content': 'Jdu kourit',
         'date_posted': '25. November 2023'
     },
     {

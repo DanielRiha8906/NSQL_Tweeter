@@ -9,12 +9,12 @@
     {% endif %}
 </head>
 <div>
-<body class="bg-blue-900/75">
-    <nav class="flex gap-2 py-2 items-center justify-center">
-        <a href="http://127.0.0.1:5000" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">Home</a>
-        <a href="http://127.0.0.1:5000/about" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">About</a>
-        <a href="http://127.0.0.1:5000/profile" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">My profile</a>
-        <a href="http://127.0.0.1:5000/register" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">Register</a>
+<body class="bg-nice">
+    <nav class="topnav">
+            <a class="nav-link" href="/">Home</a>
+            <a class="nav-link" href="about">About</a>
+            <a class="split" class="nav-link" href="profile">My Profile</a>
+            <a class="split" class="nav-link" href="register">Register</a>
     </nav>
     <div class="conatiner">{%block content%} {% endblock %}</div>
 </body>
