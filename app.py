@@ -29,7 +29,18 @@ posts = [
 
 @app.route("/")
 def home():
+    tweets = db.globalRecentTwentyTweets()
+    posts = [
+        {
+            'author': tweet['userName'],
+            'title': "title",
+            'content': tweet['tweetContent'],
+            'date_posted': tweet['dateTweeted']
+        }
+        for tweet in tweets
+    ]
     return render_template('home.html', posts=posts)
+
 
 @app.route("/about")
 def about():
@@ -38,7 +49,17 @@ def about():
 
 @app.route("/profile")
 def profile():
-    return render_template('profile.html')
+    tweets = db.myRecentTwentyTweets(userID=1)
+    posts = [
+        {
+            'author': tweet['userName'],
+            'title': "title",
+            'content': tweet['tweetContent'],
+            'date_posted': tweet['dateTweeted']
+        }
+        for tweet in tweets
+    ]
+    return render_template('profile.html', posts=posts)
 
 
 @app.route("/register")

@@ -148,6 +148,3 @@ class F:
     # addTweet(1, "Test tweet")
     # for tweet in recentTwentyTweets():
     #    print(tweet["dateTweeted"])
-
-
-f = F(DB("Users"), DB("MockTweets"))
