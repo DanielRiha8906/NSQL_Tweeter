@@ -14,7 +14,10 @@ tweety = DB("MockTweets")
 
 def addTweet(userID, body):
     """Funkce pro pridani tweetu ktera bere jako argument ID uzivatele a obsahu tweetu,
-    pokud neexistuje tak mu neumozni prispevek vytvorit."""
+        pokud neexistuje tak mu neumozni prispevek vytvorit.
+        @userID: id aktualniho uzivatele
+        @body: obsah tweetu, ktery uzivatel na vstupu zadal
+    """
     currentUser = uzivatele.find_one({"_id": userID})
     if currentUser is None:
         print("You have to login, to be able to add a tweet!")
@@ -27,13 +30,15 @@ def addTweet(userID, body):
         "dateTweeted": datetime.now().strftime("%H:%M:%d:%m:%Y"),
         "likesCount": 0,
     }
-    return tweety.insert_one(tweet)
+    tweety.insert_one(tweet)
 
 
 def delTweet(tweetID, userID):
-    """Funkce posila pozadavek na vymazani tweetu podle ID."""
+    """Funkce posila pozadavek na vymazani tweetu podle ID.
+        @tweetID: ID tweetu, ktery chceme vymazat
+        @UserID: ID (aktualniho) uzivatele, ktery chce prispevek vymazat, pro overeni zda je puvodnim autorem
+    """
     currentTweet = tweety.find_one({"_id": tweetID})
-    # print(currentTweet)
     if currentTweet.get("userID") != userID:
         print(f"currentUser: {uzivatele.find_one({'_id': userID})}")
         print(f"author: {currentTweet.get('userID')}")
@@ -42,57 +47,78 @@ def delTweet(tweetID, userID):
     if currentTweet is None:
         print("You cannot delete a tweet that does not exist!")
         return None
-    # print(f"Uspesne jsem tweet znicil {tweetID}:{userID}")
-    return tweety.delete_one({"_id": tweetID})
+    tweety.delete_one({"_id": tweetID})
 
 
 def updateTweet(tweetID, newContent):
-    """Funkce posila pozadavek na aktualizaci tweetu podle ID, prijima novy obsah tweetu."""
-    # currentTweet = tweety.find_one({"_id": tweetID})
-    #!TODO Maybe ?
-    pass
+    """Funkce posila pozadavek na aktualizaci tweetu podle ID, prijima novy obsah tweetu.
+        @tweetID: ID tweetu, ktery chceme aktualizovat
+        @newContent: novy obsah tweetu ktery aktualizujeme
+    """
+    filter = {"_id": tweetID}
+    newBody = {"$set": {"tweetContent": newContent}}
+    tweety.update_one(filter, newBody)
 
 
 def myTweets(myID):
-    """Funkce vraci veskere tweety ktery uzivatel s danym ID pridal."""
+    """Funkce vraci veskere tweety ktery uzivatel s danym ID pridal.
+        @myID: ID aktualniho uzivatele
+        $return: vraci veskere jeho pridane tweety
+    """
     mojeTweets = tweety.find({"userID": myID})
     return mojeTweets
 
 
 def whoAmI(myID):
-    """Funkce vraci zaznam o uzivateli s danym ID."""
+    """Funkce vraci zaznam o uzivateli s danym ID.
+        @myID: ID aktualniho uzivatele
+        $return: vraci veskere info o uzivateli s danym ID
+    """
     return uzivatele.find_one({"_id": myID})
 
 
 def registerUser(username, password):
-    """Funkce pro vytvoreni noveho uzivatele."""
+    """Funkce pro vytvoreni noveho uzivatele.
+        @username: uzivatelske jmeno, ktere klient zadal na vstupu
+        @password: heslo, ktere klient zadal na vstupu
+    """
     latestUser = uzivatele.find_one(sort=[("_id", pymongo.DESCENDING)])
-    maxID = latestUser.get("_id")
+    latestID = latestUser.get("_id")
     user = {
-        "_id": maxID + 1,
+        "_id": latestID + 1,
         "userName": username,
         "password": password,
     }
-    return uzivatele.insert_one(user)
+    uzivatele.insert_one(user)
 
 
 def loginUser(username, password):
-    """Funkce pro prihlaseni uzivatele."""
+    """Funkce pro prihlaseni uzivatele.
+        @username: uzivatelske jmeno, ktere klient zadal na vstupu
+        @password: heslo, ktere klient zadal na vstupu
+        $return: vraci objekt uzivatele
+    """
     user = uzivatele.find_one({"userName": username, "password": password})
     if user is None:
         print("Wrong username or password!")
         return False
     return user
 
-def recentTwentyTweets():
+
+def globalRecentTwentyTweets():
+    """Funkce vraci "nejcerstvejsich" 20 tweetu.
+        $return: kolekce 20 tweetu, ktere jsou nejnovejsi
+    """
     last20 = tweety.find().sort("dateTweeted", -1).limit(20)
     return last20
 
 
+# updateTweet(5, "Premazani zmeneneho obsahu tweetu.")
 
-
+# for tweet in recentTwentyTweets():
+#     print(tweet)
+# delTweet(22, 1)
 # print(loginUser("hokus", "pokus"))
 # addTweet(1, "Test tweet")
-#for tweet in recentTwentyTweets():
+# for tweet in recentTwentyTweets():
 #    print(tweet["dateTweeted"])
-
