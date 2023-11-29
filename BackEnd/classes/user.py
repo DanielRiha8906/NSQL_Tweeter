@@ -40,22 +40,31 @@ class F:
             @UserID: ID (aktualniho) uzivatele, ktery chce prispevek vymazat, pro overeni zda je puvodnim autorem
         """
         currentTweet = self.tweety.find_one({"_id": tweetID})
-        if currentTweet.get("userID") != userID:
-            print(f"currentUser: {self.uzivatele.find_one({'_id': userID})}")
-            print(f"author: {currentTweet.get('userID')}")
-            print("You cannot delete a tweet that is not yours!")
-            return None
+        user = currentTweet.get("userID")
         if currentTweet is None:
             print("You cannot delete a tweet that does not exist!")
             return None
+        if user != userID:
+            print("You cannot delete a tweet that is not yours!")
+            return None
+
         self.tweety.delete_one({"_id": tweetID})
 
 
-    def updateTweet(self, tweetID, newContent):
+    def updateTweet(self, tweetID, newContent, userID):
         """Funkce posila pozadavek na aktualizaci tweetu podle ID, prijima novy obsah tweetu.
             @tweetID: ID tweetu, ktery chceme aktualizovat
             @newContent: novy obsah tweetu ktery aktualizujeme
+            @userID: ID (aktualniho) uzivatele, ktery chce prispevek aktualizovat, pro overeni zda je puvodnim autorem
         """
+        currentTweet = self.tweety.find_one({"_id": tweetID})
+        tweetAuthor = currentTweet.get("userID")
+        if currentTweet is None:
+            print("You cannot update a tweet that does not exist!")
+            return None
+        if tweetAuthor != userID:
+            print("You cannot update a tweet that is not yours!")
+            return None
         filter = {"_id": tweetID}
         newBody = {"$set": {"tweetContent": newContent}}
         self.tweety.update_one(filter, newBody)
@@ -66,6 +75,9 @@ class F:
             @myID: ID aktualniho uzivatele
             $return: vraci veskere jeho pridane tweety
         """
+        if self.uzivatele.find_one({"_id": myID}) is None or myID is None:
+            print("You are not logged in!")
+            return None
         mojeTweets = self.tweety.find({"userID": myID})
         return mojeTweets
 
@@ -75,7 +87,11 @@ class F:
             @myID: ID aktualniho uzivatele
             $return: vraci veskere info o uzivateli s danym ID
         """
-        return self.uzivatele.find_one({"_id": myID})
+        user = self.uzivatele.find_one({"_id": myID})
+        if user is None:
+            print("You are not logged in!")
+            return None
+        return user
 
 
     def registerUser(self, username, password):
@@ -83,6 +99,10 @@ class F:
             @username: uzivatelske jmeno, ktere klient zadal na vstupu
             @password: heslo, ktere klient zadal na vstupu
         """
+        if self.uzivatele.find_one({"userName": username}) is not None:
+            print("Username is already taken!")
+            return None
+
         latestUser = self.uzivatele.find_one(sort=[("_id", pymongo.DESCENDING)])
         latestID = latestUser.get("_id")
         user = {
@@ -122,7 +142,6 @@ class F:
         filter = {"userID": userID}
         last20 = self.tweety.find(filter).sort("dateTweeted", -1).limit(20)
         return last20
-
 
     # updateTweet(5, "Premazani zmeneneho obsahu tweetu.")
 
