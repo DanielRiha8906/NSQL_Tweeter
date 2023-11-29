@@ -1,21 +1,25 @@
-from db import DB
+from BackEnd.classes.db import DB
 from dotenv import load_dotenv
+
 # from pymongo import MongoClient
 import pymongo
 from datetime import datetime
 
+
 class F:
     load_dotenv()
-    
-    def __init__(self, uzivatele, tweety):
-# Ustanoveni connection k jednotlivym kolekcim
-        self.uzivatele = uzivatele
-        self.tweety = tweety
 
+    uzivatele: DB
+    tweety: DB
+
+    def __init__(self):
+        # Ustanoveni connection k jednotlivym kolekcim
+        self.uzivatele = DB("Users")
+        self.tweety = DB("MockTweets")
 
     def addTweet(self, userID, body):
         """Funkce pro pridani tweetu ktera bere jako argument ID uzivatele a obsahu tweetu,
-            pokud neexistuje tak mu neumozni prispevek vytvorit.
+        pokud neexistuje tak mu neumozni prispevek vytvorit.
             @userID: id aktualniho uzivatele
             @body: obsah tweetu, ktery uzivatel na vstupu zadal
         """
@@ -33,7 +37,6 @@ class F:
         }
         self.tweety.insert_one(tweet)
 
-
     def delTweet(self, tweetID, userID):
         """Funkce posila pozadavek na vymazani tweetu podle ID.
             @tweetID: ID tweetu, ktery chceme vymazat
@@ -49,7 +52,6 @@ class F:
             return None
 
         self.tweety.delete_one({"_id": tweetID})
-
 
     def updateTweet(self, tweetID, newContent, userID):
         """Funkce posila pozadavek na aktualizaci tweetu podle ID, prijima novy obsah tweetu.
@@ -69,7 +71,6 @@ class F:
         newBody = {"$set": {"tweetContent": newContent}}
         self.tweety.update_one(filter, newBody)
 
-
     def myTweets(self, myID):
         """Funkce vraci veskere tweety ktery uzivatel s danym ID pridal.
             @myID: ID aktualniho uzivatele
@@ -81,7 +82,6 @@ class F:
         mojeTweets = self.tweety.find({"userID": myID})
         return mojeTweets
 
-
     def whoAmI(self, myID):
         """Funkce vraci zaznam o uzivateli s danym ID.
             @myID: ID aktualniho uzivatele
@@ -92,7 +92,6 @@ class F:
             print("You are not logged in!")
             return None
         return user
-
 
     def registerUser(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
@@ -112,7 +111,6 @@ class F:
         }
         self.uzivatele.insert_one(user)
 
-
     def loginUser(self, username, password):
         """Funkce pro prihlaseni uzivatele.
             @username: uzivatelske jmeno, ktere klient zadal na vstupu
@@ -125,14 +123,12 @@ class F:
             return False
         return user
 
-
     def globalRecentTwentyTweets(self):
         """Funkce vraci "nejcerstvejsich" 20 tweetu.
             $return: kolekce 20 tweetu, ktere jsou nejnovejsi
         """
         last20 = self.tweety.find().sort("dateTweeted", -1).limit(20)
         return last20
-
 
     def myRecentTwentyTweets(self, userID):
         """Funkce vraci "nejcerstvejsich" 20 tweetu pridanych konkretnim uzivatelem.
