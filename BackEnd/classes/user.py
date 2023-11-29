@@ -113,6 +113,16 @@ def globalRecentTwentyTweets():
     return last20
 
 
+def myRecentTwentyTweets(userID):
+    """Funkce vraci "nejcerstvejsich" 20 tweetu pridanych konkretnim uzivatelem.
+        @userID: ID uzivatele, jehoz tweety chceme zobrazit
+        $return: kolekce 20 tweetu, ktere jsou nejnovejsi u konkretniho uzivatele
+    """
+    filter = {"userID": userID}
+    last20 = tweety.find(filter).sort("dateTweeted", -1).limit(20)
+    return last20
+
+
 # updateTweet(5, "Premazani zmeneneho obsahu tweetu.")
 
 # for tweet in recentTwentyTweets():
