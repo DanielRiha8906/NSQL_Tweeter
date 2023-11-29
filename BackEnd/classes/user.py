@@ -1,4 +1,4 @@
-from db import DB
+from BackEnd.classes.db import DB
 from dotenv import load_dotenv
 # from pymongo import MongoClient
 import pymongo
@@ -7,10 +7,13 @@ from datetime import datetime
 class F:
     load_dotenv()
     
-    def __init__(self, uzivatele, tweety):
+    uzivatele : DB
+    tweety : DB
+
+    def __init__(self):
 # Ustanoveni connection k jednotlivym kolekcim
-        self.uzivatele = uzivatele
-        self.tweety = tweety
+        self.uzivatele = DB("Users")
+        self.tweety = DB("MockTweets")
 
 
     def addTweet(self, userID, body):
@@ -40,7 +43,7 @@ class F:
             @UserID: ID (aktualniho) uzivatele, ktery chce prispevek vymazat, pro overeni zda je puvodnim autorem
         """
         currentTweet = self.tweety.find_one({"_id": tweetID})
-        if currentTweet.get("userID") != userID:
+        if currentTweet.get() != userID:
             print(f"currentUser: {self.uzivatele.find_one({'_id': userID})}")
             print(f"author: {currentTweet.get('userID')}")
             print("You cannot delete a tweet that is not yours!")
@@ -133,6 +136,3 @@ class F:
     # addTweet(1, "Test tweet")
     # for tweet in recentTwentyTweets():
     #    print(tweet["dateTweeted"])
-
-
-f = F(DB("Users"), DB("MockTweets"))
