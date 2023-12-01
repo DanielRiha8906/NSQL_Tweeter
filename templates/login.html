@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block content%}
 <center><h1>Login page</h1></center>
-<form>  
+<form method="post" action="/login">  
     <div class="container">   
         <label>Username : </label>   
         <input type="text" placeholder="Enter Username" name="username" required>  

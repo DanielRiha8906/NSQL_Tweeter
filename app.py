@@ -44,8 +44,7 @@ def login():
         user = str(request.form['username'])
         passw = str(request.form['password'])
         userID = (db.loginUser(user, passw))["_id"]
-        redis.hset("logged_in", str(userID))
-        print(userID)
+        redis.set("logged_in", str(userID))
         return redirect('/profile')
     else:
         return render_template('login.html')
