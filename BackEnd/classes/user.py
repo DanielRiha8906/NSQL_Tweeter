@@ -90,23 +90,23 @@ class F:
         newBody = {"$set": {"tweetContent": newContent}}
         self.tweety.update_one(filter, newBody)
 
-    def myTweets(self, myID):
+    def myTweets(self, userID):
         """Funkce vraci veskere tweety ktery uzivatel s danym ID pridal.
-            @myID: ID aktualniho uzivatele
+            @userID: ID aktualniho uzivatele
             $return: vraci veskere jeho pridane tweety
         """
-        if self.uzivatele.find_one({"_id": myID}) is None or myID is None:
+        if self.uzivatele.find_one({"_id": userID}) is None or userID is None:
             print("You are not logged in!")
             return None
-        mojeTweets = self.tweety.find({"userID": myID})
+        mojeTweets = self.tweety.find({"userID": userID})
         return mojeTweets
 
-    def whoAmI(self, myID):
+    def whoAmI(self, userID):
         """Funkce vraci zaznam o uzivateli s danym ID.
-            @myID: ID aktualniho uzivatele
+            @userID: ID aktualniho uzivatele
             $return: vraci veskere info o uzivateli s danym ID
         """
-        user = self.uzivatele.find_one({"_id": myID})
+        user = self.uzivatele.find_one({"_id": userID})
         if user is None:
             print("You are not logged in!")
             return None
