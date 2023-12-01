@@ -112,6 +112,27 @@ class F:
             return None
         return user
 
+    def upvoteTweet(self, userID, tweetID):
+        """Funkce umoznuje uzivateli interagovat s tweetem. Prida ID tweetu do pole likedTweets daneho uzivatele a vice versa.
+            @userID: ID aktualniho uzivatele
+            @tweetID: ID tweetu, ktery chce uzivatel "likenout"
+        """
+        user = self.uzivatele.find_one({"_id": userID})
+        if user is None:
+            print("You are not logged in!")
+            return None
+        if self.tweety.find_one({"_id": tweetID}) is None:
+            print("You cannot upvote a tweet that does not exist!")
+            return None
+        if userID in self.tweety.find_one({"_id": tweetID}).get("likedBy"):
+            print(
+                "You have already upvoted this tweet, do you want to cancel your upvote?")
+            return False
+        self.uzivatele.update_one(
+            {"_id": userID}, {"$push": {"upvotedTweets": tweetID}})
+        self.tweety.update_one(
+            {"_id": tweetID}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": userID}})
+
     def registerUser(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
             @username: uzivatelske jmeno, ktere klient zadal na vstupu
