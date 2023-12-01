@@ -17,7 +17,6 @@ class F:
         self.uzivatele = DB("Users")
         self.tweety = DB("MockTweets")
 
-
     def addTweet(self, userID, body):
         """Funkce pro pridani tweetu ktera bere jako argument ID uzivatele a obsahu tweetu,
         pokud neexistuje tak mu neumozni prispevek vytvorit.
@@ -38,7 +37,6 @@ class F:
         }
         self.tweety.insert_one(tweet)
 
-
     def delTweet(self, tweetID, userID):
         """Funkce posila pozadavek na vymazani tweetu podle ID.
             @tweetID: ID tweetu, ktery chceme vymazat
@@ -55,6 +53,21 @@ class F:
 
         self.tweety.delete_one({"_id": tweetID})
 
+    def updateBio(self, userID, newBIO):
+        """Funkce posila pozadavek na updatenuti biografie uzivatele podle ID, prijima novou biografii.
+            @userID: ID (aktualniho) uzivatele, ktery chce biografii aktualizovat.
+            @newBIO: obsah nove biografie
+        """
+        filter = {"_id": userID}
+        self.tweety.update_one(filter, {"$set": {"bio": newBIO}})
+
+    def updateName(self, userID, newName):
+        """Funkce pro aktualizovani username uzivatele
+            @userID: ID (aktualniho) uzivatele, ktery chce username aktualizovat
+            @newName: nove jmeno, ktere si uzivatel zvolil
+        """
+        filter = {"_id": userID}
+        self.tweety.update_one(filter, {"$set": {"userName": newName}})
 
     def updateTweet(self, tweetID, newContent, userID):
         """Funkce posila pozadavek na aktualizaci tweetu podle ID, prijima novy obsah tweetu.
@@ -74,7 +87,6 @@ class F:
         newBody = {"$set": {"tweetContent": newContent}}
         self.tweety.update_one(filter, newBody)
 
-
     def myTweets(self, myID):
         """Funkce vraci veskere tweety ktery uzivatel s danym ID pridal.
             @myID: ID aktualniho uzivatele
@@ -85,7 +97,6 @@ class F:
             return None
         mojeTweets = self.tweety.find({"userID": myID})
         return mojeTweets
-
 
     def whoAmI(self, myID):
         """Funkce vraci zaznam o uzivateli s danym ID.
@@ -98,7 +109,6 @@ class F:
             return None
         return user
 
-
     def registerUser(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
             @username: uzivatelske jmeno, ktere klient zadal na vstupu
@@ -108,7 +118,8 @@ class F:
             print("Username is already taken!")
             return None
 
-        latestUser = self.uzivatele.find_one(sort=[("_id", pymongo.DESCENDING)])
+        latestUser = self.uzivatele.find_one(
+            sort=[("_id", pymongo.DESCENDING)])
         latestID = latestUser.get("_id")
         user = {
             "_id": latestID + 1,
@@ -117,19 +128,18 @@ class F:
         }
         self.uzivatele.insert_one(user)
 
-
     def loginUser(self, username, password):
         """Funkce pro prihlaseni uzivatele.
             @username: uzivatelske jmeno, ktere klient zadal na vstupu
             @password: heslo, ktere klient zadal na vstupu
             $return: vraci objekt uzivatele
         """
-        user = self.uzivatele.find_one({"userName": username, "password": password})
+        user = self.uzivatele.find_one(
+            {"userName": username, "password": password})
         if user is None:
             print("Wrong username or password!")
             return False
         return user
-
 
     def globalRecentTwentyTweets(self):
         """Funkce vraci "nejcerstvejsich" 20 tweetu.
@@ -137,7 +147,6 @@ class F:
         """
         last20 = self.tweety.find().sort("dateTweeted", -1).limit(20)
         return last20
-
 
     def myRecentTwentyTweets(self, userID):
         """Funkce vraci "nejcerstvejsich" 20 tweetu pridanych konkretnim uzivatelem.
@@ -147,7 +156,6 @@ class F:
         filter = {"userID": userID}
         last20 = self.tweety.find(filter).sort("dateTweeted", -1).limit(20)
         return last20
-
 
     # updateTweet(5, "Premazani zmeneneho obsahu tweetu.")
 
