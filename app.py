@@ -41,9 +41,9 @@ def profile():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = str(request.form['username'])
-        password = str(request.form['password'])
-        userID = (db.loginUser(username, password)).get("_id")
+        user = str(request.form['username'])
+        passw = str(request.form['password'])
+        userID = (db.loginUser(user, passw))["_id"]
         redis.hset("logged_in", str(userID))
         print(userID)
         return redirect('/profile')
