@@ -27,6 +27,9 @@ class F:
         if currentUser is None:
             print("You have to login, to be able to add a tweet!")
             return None
+        if body.len() > 255:
+            print("Tweet is too long!")
+            return None
         tweet = {
             "_id": self.tweety.count_documents({}) + 1,
             "userID": userID,
