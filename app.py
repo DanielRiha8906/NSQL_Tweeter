@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 from BackEnd.classes.user import F
 from redis import Redis
 
@@ -6,7 +6,6 @@ app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 
 db = F()
-
 
 
 @app.route("/")
@@ -31,8 +30,28 @@ def about():
 
 @app.route("/profile")
 def profile():
-    tweets = db.myRecentTwentyTweets(userID=1)
-    posts = [
+    userID = redis.get("logged_in")
+    if userID is None:
+        return redirect('/login')
+    tweets = db.myRecentTwentyTweets(int(userID))
+    posts = load_20_tweets(tweets)
+    return render_template('profile.html', posts=posts)
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = str(request.form['username'])
+        password = str(request.form['password'])
+        userID = (db.loginUser(username, password)).get("_id")
+        redis.hset("logged_in", str(userID))
+        print(userID)
+        return redirect('/profile')
+    else:
+        return render_template('login.html')
+
+def load_20_tweets(tweets):
+    return [
         {
             'author': tweet['userName'],
             'title': "title",
@@ -41,12 +60,6 @@ def profile():
         }
         for tweet in tweets
     ]
-    return render_template('profile.html', posts=posts)
-
-
-@app.route("/login")
-def register():
-    return render_template('login.html')
 
 
 if __name__ == '__main__':
