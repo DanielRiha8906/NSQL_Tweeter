@@ -1,9 +1,9 @@
 from flask import Flask, render_template
 from BackEnd.classes.user import F
-
-from BackEnd.classes.user import *
+from redis import Redis
 
 app = Flask(__name__)
+redis = Redis(host='redis', port=6379)
 
 db = F()
 

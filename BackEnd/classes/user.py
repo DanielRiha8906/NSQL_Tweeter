@@ -17,9 +17,7 @@ class F:
         self.uzivatele = DB("Users")
         self.tweety = DB("MockTweets")
 
-#!TODO
-# přidat do addTweet i název tweetu!
-# jako je na twitteru, popis tweetu - je dobrovolný
+
     def addTweet(self, userID, body):
         """Funkce pro pridani tweetu ktera bere jako argument ID uzivatele a obsahu tweetu,
         pokud neexistuje tak mu neumozni prispevek vytvorit.
@@ -34,12 +32,12 @@ class F:
             "_id": self.tweety.count_documents({}) + 1,
             "userID": userID,
             "userName": currentUser["userName"],
-        # add title!
             "tweetContent": body,
             "dateTweeted": datetime.now().strftime("%H:%M:%d:%m:%Y"),
             "likesCount": 0,
         }
         self.tweety.insert_one(tweet)
+
 
     def delTweet(self, tweetID, userID):
         """Funkce posila pozadavek na vymazani tweetu podle ID.
@@ -56,6 +54,7 @@ class F:
             return None
 
         self.tweety.delete_one({"_id": tweetID})
+
 
     def updateTweet(self, tweetID, newContent, userID):
         """Funkce posila pozadavek na aktualizaci tweetu podle ID, prijima novy obsah tweetu.
@@ -75,6 +74,7 @@ class F:
         newBody = {"$set": {"tweetContent": newContent}}
         self.tweety.update_one(filter, newBody)
 
+
     def myTweets(self, myID):
         """Funkce vraci veskere tweety ktery uzivatel s danym ID pridal.
             @myID: ID aktualniho uzivatele
@@ -86,6 +86,7 @@ class F:
         mojeTweets = self.tweety.find({"userID": myID})
         return mojeTweets
 
+
     def whoAmI(self, myID):
         """Funkce vraci zaznam o uzivateli s danym ID.
             @myID: ID aktualniho uzivatele
@@ -96,6 +97,7 @@ class F:
             print("You are not logged in!")
             return None
         return user
+
 
     def registerUser(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
@@ -115,6 +117,7 @@ class F:
         }
         self.uzivatele.insert_one(user)
 
+
     def loginUser(self, username, password):
         """Funkce pro prihlaseni uzivatele.
             @username: uzivatelske jmeno, ktere klient zadal na vstupu
@@ -127,12 +130,14 @@ class F:
             return False
         return user
 
+
     def globalRecentTwentyTweets(self):
         """Funkce vraci "nejcerstvejsich" 20 tweetu.
             $return: kolekce 20 tweetu, ktere jsou nejnovejsi
         """
         last20 = self.tweety.find().sort("dateTweeted", -1).limit(20)
         return last20
+
 
     def myRecentTwentyTweets(self, userID):
         """Funkce vraci "nejcerstvejsich" 20 tweetu pridanych konkretnim uzivatelem.
@@ -142,6 +147,7 @@ class F:
         filter = {"userID": userID}
         last20 = self.tweety.find(filter).sort("dateTweeted", -1).limit(20)
         return last20
+
 
     # updateTweet(5, "Premazani zmeneneho obsahu tweetu.")
 
