@@ -3,18 +3,31 @@
 <head>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
     {% if title %}
-    <title>Tweeter - {{title}}</title>
+    <title>QUACKER - {{title}}</title>
     {% else %}
-    <title>Tweeter</title>  
+    <title>Quacker</title>
     {% endif %}
 </head>
-<body class="bg-black/20">
-    <nav class="flex gap-2 py-2">
-        <a href="http://127.0.0.1:5000" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">Home</a>
-        <a href="http://127.0.0.1:5000/about" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">About</a>
-        <a href="http://127.0.0.1:5000/profile" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">My profile</a>
-        <a href="http://127.0.0.1:5000/register" class="px-4 py-2 border border-black rounded-md hover:text-blue-800 w-max hover:bg-purple-400">Register</a>
+<div>
+<body class="bg-nice">
+    <nav class="topnav">
+            <a class="nav-link" href="/">Home</a>
+            <a class="nav-link" href="about">About</a>
+            <a class="split" class="nav-link" href="profile">My Profile</a>
+            <a class="split" class="nav-link" href="login">Login</a>
     </nav>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <div class="conatiner">{%block content%} {% endblock %}</div>
+    <div class="footer">
+        <p>Copyright &copy; Duckers 2023</p>
+      </div>
 </body>
 </html>

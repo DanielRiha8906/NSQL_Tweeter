@@ -1,8 +1,28 @@
-{% extends 'layout.html' %}
-{% block content%}
-{% for post in posts %}
-<h1>{{ post.title }}</h1>
-<p>By {{ post.author }} on {{ post.date_posted }}</p>
-<p>{{ post.content }}</p>
-{% endfor %}
+{% extends 'layout.html' %} {% block content%}
+<div class="flex justify-center flex-col w-[40rem] mx-auto gap-5">
+  {% for post in posts %}
+  <div class="px-10 py-10 border border-gray-200">
+    <a href="#" class="group block flex-shrink-0">
+      <div class="flex items-center">
+        <div class="ml-3">
+          <p class="tetx-base leading-6 font-medium text-white">
+            {{post.author}}
+            <span class="text -sm leading-5 font-medium text-gray-400 group-hover:text-gray-300 transition ease-in-out duration-150">
+              @{{post.author}} {{post.date_posted}}
+            </span>
+          </p>
+        </div>
+      </div>
+    </a>
+    <h1 class="text-pink-400 flex items-center justify-center">
+      {{ post.title }}
+    </h1>
+    <p class="flex items-center justify-center hover:text-pink-600">
+      {{ post.content }}
+    </p>
+    <div class="flex flex-shrink-0 p-4 pb-0 items-center justify-center"></div>
+  </div>
+
+  {% endfor %}
+</div>
 {% endblock content %}

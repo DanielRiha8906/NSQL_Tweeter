@@ -1,3 +1,15 @@
+# FrontEnd
 node_modules/
-venv/
 package-lock.json
+
+# General
+venv/
+.vscode/
+
+# BackEnd
+BackEnd/.env
+BackEnd/__init__.py
+BackEnd/classes/__pycache__
+
+# Testing
+docs/
