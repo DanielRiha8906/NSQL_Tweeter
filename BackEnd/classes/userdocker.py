@@ -134,9 +134,13 @@ class FD:
             print("Username is already taken!")
             return None
 
+
         latestUser = self.users.find_one(
             sort=[("_id", pymongo.DESCENDING)])
-        latestID = latestUser.get("_id")
+        if latestUser is None:
+            latestID = 0
+        else:
+            latestID = latestUser.get("_id")
         user = {
             "_id": latestID + 1,
             "userName": username,

@@ -7,14 +7,10 @@ from pymongo import MongoClient
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 
-def DBD(collectionName):
-    client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
-    dbname = client["nsql_sem"]
-    collection = dbname[collectionName]
-    return collection
+client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
+dbname = client["nsql_sem"]
 
-
-db = FD(DBD("Users"), DBD("Quacks")) # pouziti docker mongo
+db = FD(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
 #db = F() # pouziti mongo pres railway
 
 
@@ -51,16 +47,25 @@ def login():
     else:
         return render_template('login.html')
 
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        user = str(request.form['username'])
+        passw = str(request.form['password'])
+        db.registerUser(user, passw)
+        return redirect('/login')
+    else:
+        return render_template('register.html')
+
+
 def load_20_quacks(quacks):
-    return [
-        {
+    return [ {
             'author': quack['userName'],
             'title': "title",
             'content': quack['quackContent'],
             'date_posted': quack['dateTweeted']
-        }
-        for quack in quacks
-    ]
+        } for quack in quacks]
 
 
 if __name__ == '__main__':
