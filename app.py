@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, flash
 from BackEnd.classes.user import F
 from BackEnd.classes.userdocker import FD
 from redis import Redis
@@ -6,6 +6,7 @@ from pymongo import MongoClient
 
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
+app.secret_key = 'quack'
 
 client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
 dbname = client["nsql_sem"]
@@ -41,9 +42,15 @@ def login():
     if request.method == "POST":
         user = str(request.form['username'])
         passw = str(request.form['password'])
-        userID = (db.loginUser(user, passw))["_id"]
-        redis.set("logged_in", str(userID))
-        return redirect('/profile')
+        user = db.loginUser(user, passw)
+        if user != False:
+            userID = user["_id"]
+            redis.set("logged_in", str(userID))
+            flash('You are now logged in', 'success')
+            return redirect('/profile')
+        else:
+            flash('Login Unsuccessful. Please check username and password', 'danger')
+            return render_template('login.html')
     else:
         return render_template('login.html')
 
@@ -53,8 +60,13 @@ def register():
     if request.method == "POST":
         user = str(request.form['username'])
         passw = str(request.form['password'])
-        db.registerUser(user, passw)
-        return redirect('/login')
+        reg = db.registerUser(user, passw)
+        if reg != None:
+            flash('You are now registered and can log in')
+            return redirect('/login')
+        else:
+            flash('The username is already taken')
+            return redirect('/register')
     else:
         return render_template('register.html')
 

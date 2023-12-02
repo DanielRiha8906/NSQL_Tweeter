@@ -5,7 +5,7 @@
     {% if title %}
     <title>QUACKER - {{title}}</title>
     {% else %}
-    <title>Quacker</title>  
+    <title>Quacker</title>
     {% endif %}
 </head>
 <div>
@@ -16,6 +16,15 @@
             <a class="split" class="nav-link" href="profile">My Profile</a>
             <a class="split" class="nav-link" href="login">Login</a>
     </nav>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <ul class=flashes>
+                {% for message in messages %}
+                <li>{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
     <div class="conatiner">{%block content%} {% endblock %}</div>
     <div class="footer">
         <p>Copyright &copy; Duckers 2023</p>
