@@ -7,54 +7,51 @@ from datetime import datetime
 
 
 class F:
-    load_dotenv()
-
-    uzivatele: DB
-    tweety: DB
+    users: DB
+    quacks: DB
 
     def __init__(self):
-        # Ustanoveni connection k jednotlivym kolekcim
-        self.uzivatele = DB("Users")
-        self.tweety = DB("MockTweets")
+        self.users = DB("Users")
+        self.quacks = DB("MockTweets")
 
-    def addTweet(self, userID, body):
-        """Funkce pro pridani tweetu ktera bere jako argument ID uzivatele a obsahu tweetu,
+    def addQuack(self, userID, body):
+        """Funkce pro pridani quacku ktera bere jako argument ID uzivatele a obsahu quacku,
         pokud neexistuje tak mu neumozni prispevek vytvorit.
             @userID: id aktualniho uzivatele
-            @body: obsah tweetu, ktery uzivatel na vstupu zadal
+            @body: obsah quacku, ktery uzivatel na vstupu zadal
         """
-        currentUser = self.uzivatele.find_one({"_id": userID})
+        currentUser = self.users.find_one({"_id": userID})
         if currentUser is None:
-            print("You have to login, to be able to add a tweet!")
+            print("You have to login, to be able to add a quack!")
             return None
         if body.len() > 255:
-            print("Tweet is too long!")
+            print("Quack text is too long!")
             return None
-        tweet = {
-            "_id": self.tweety.count_documents({}) + 1,
+        quack = {
+            "_id": self.quacks.count_documents({}) + 1,
             "userID": userID,
             "userName": currentUser["userName"],
-            "tweetContent": body,
-            "dateTweeted": datetime.now().strftime("%H:%M:%d:%m:%Y"),
+            "quackContent": body,
+            "dateQuacked": datetime.now().strftime("%H:%M:%d:%m:%Y"),
             "likesCount": 0,
         }
-        self.tweety.insert_one(tweet)
+        self.quacks.insert_one(quack)
 
-    def delTweet(self, tweetID, userID):
-        """Funkce posila pozadavek na vymazani tweetu podle ID.
-            @tweetID: ID tweetu, ktery chceme vymazat
+    def delQuack(self, quackID, userID):
+        """Funkce posila pozadavek na vymazani quacku podle ID.
+            @quackID: ID quacku, ktery chceme vymazat
             @UserID: ID (aktualniho) uzivatele, ktery chce prispevek vymazat, pro overeni zda je puvodnim autorem
         """
-        currentTweet = self.tweety.find_one({"_id": tweetID})
-        user = currentTweet.get("userID")
-        if currentTweet is None:
-            print("You cannot delete a tweet that does not exist!")
+        currentQuack = self.quacks.find_one({"_id": quackID})
+        user = currentQuack.get("userID")
+        if currentQuack is None:
+            print("You cannot delete a quack that does not exist!")
             return None
         if user != userID:
-            print("You cannot delete a tweet that is not yours!")
+            print("You cannot delete a quack that is not yours!")
             return None
 
-        self.tweety.delete_one({"_id": tweetID})
+        self.quacks.delete_one({"_id": quackID})
 
     def updateBio(self, userID, newBIO):
         """Funkce posila pozadavek na updatenuti biografie uzivatele podle ID, prijima novou biografii.
@@ -62,7 +59,7 @@ class F:
             @newBIO: obsah nove biografie
         """
         filter = {"_id": userID}
-        self.tweety.update_one(filter, {"$set": {"bio": newBIO}})
+        self.quacks.update_one(filter, {"$set": {"bio": newBIO}})
 
     def updateName(self, userID, newName):
         """Funkce pro aktualizovani username uzivatele
@@ -70,79 +67,78 @@ class F:
             @newName: nove jmeno, ktere si uzivatel zvolil
         """
         filter = {"_id": userID}
-        self.tweety.update_one(filter, {"$set": {"userName": newName}})
+        self.quacks.update_one(filter, {"$set": {"userName": newName}})
 
-    def updateTweet(self, tweetID, newContent, userID):
-        """Funkce posila pozadavek na aktualizaci tweetu podle ID, prijima novy obsah tweetu.
-            @tweetID: ID tweetu, ktery chceme aktualizovat
+    def updateQuack(self, quackID, newContent, userID):
+        """Funkce posila pozadavek na aktualizaci quacku podle ID, prijima novy obsah quacku.
+            @quackID: ID quacku, ktery chceme aktualizovat
             @newContent: novy obsah tweetu ktery aktualizujeme
             @userID: ID (aktualniho) uzivatele, ktery chce prispevek aktualizovat, pro overeni zda je puvodnim autorem
         """
-        currentTweet = self.tweety.find_one({"_id": tweetID})
-        tweetAuthor = currentTweet.get("userID")
+        currentTweet = self.quacks.find_one({"_id": quackID})
+        quackAuthor = currentTweet.get("userID")
         if currentTweet is None:
-            print("You cannot update a tweet that does not exist!")
+            print("You cannot update a quack that does not exist!")
             return None
-        if tweetAuthor != userID:
-            print("You cannot update a tweet that is not yours!")
+        if quackAuthor != userID:
+            print("You cannot update a quack that is not yours!")
             return None
-        filter = {"_id": tweetID}
+        filter = {"_id": quackID}
         newBody = {"$set": {"tweetContent": newContent}}
-        self.tweety.update_one(filter, newBody)
+        self.quacks.update_one(filter, newBody)
 
-    def myTweets(self, userID):
-        """Funkce vraci veskere tweety ktery uzivatel s danym ID pridal.
+    def myQuacks(self, userID):
+        """Funkce vraci veskere quacky ktery uzivatel s danym ID pridal.
             @userID: ID aktualniho uzivatele
-            $return: vraci veskere jeho pridane tweety
+            $return: vraci veskere jeho pridane quacky
         """
-        if self.uzivatele.find_one({"_id": userID}) is None or userID is None:
+        if self.users.find_one({"_id": userID}) is None or userID is None:
             print("You are not logged in!")
             return None
-        mojeTweets = self.tweety.find({"userID": userID})
-        return mojeTweets
-
+        mojeQuacks = self.quacks.find({"userID": userID})
+        return mojeQuacks
     def whoAmI(self, userID):
         """Funkce vraci zaznam o uzivateli s danym ID.
             @userID: ID aktualniho uzivatele
             $return: vraci veskere info o uzivateli s danym ID
         """
-        user = self.uzivatele.find_one({"_id": userID})
+        user = self.users.find_one({"_id": userID})
         if user is None:
             print("You are not logged in!")
             return None
         return user
 
-    def upvoteTweet(self, userID, tweetID):
-        """Funkce umoznuje uzivateli interagovat s tweetem. Prida ID tweetu do pole likedTweets daneho uzivatele a vice versa.
+    def upvoteQuack(self, userID, quackID):
+        """Funkce umoznuje uzivateli interagovat s quackem. Prida ID quacku do pole likedTweets daneho uzivatele a vice versa.
             @userID: ID aktualniho uzivatele
-            @tweetID: ID tweetu, ktery chce uzivatel "likenout"
+            @quackID: ID quacku, ktery chce uzivatel "likenout"
         """
-        user = self.uzivatele.find_one({"_id": userID})
+        user = self.users.find_one({"_id": userID})
         if user is None:
             print("You are not logged in!")
             return None
-        if self.tweety.find_one({"_id": tweetID}) is None:
-            print("You cannot upvote a tweet that does not exist!")
+        if self.quacks.find_one({"_id": quackID}) is None:
+            print("You cannot upvote a quack that does not exist!")
             return None
-        if userID in self.tweety.find_one({"_id": tweetID}).get("likedBy"):
+        if userID in self.quacks.find_one({"_id": quackID}).get("likedBy"):
             print(
-                "You have already upvoted this tweet, do you want to cancel your upvote?")
+                "You have already upvoted this quack, do you want to cancel your upvote?")
             return False
-        self.uzivatele.update_one(
-            {"_id": userID}, {"$push": {"upvotedTweets": tweetID}})
-        self.tweety.update_one(
-            {"_id": tweetID}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": userID}})
+        self.users.update_one(
+            {"_id": userID}, {"$push": {"upvotedTweets": quackID}})
+        self.quacks.update_one(
+            {"_id": quackID}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": userID}})
 
     def registerUser(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
             @username: uzivatelske jmeno, ktere klient zadal na vstupu
             @password: heslo, ktere klient zadal na vstupu
         """
-        if self.uzivatele.find_one({"userName": username}) is not None:
+        if self.users.find_one({"userName": username}) is not None:
             print("Username is already taken!")
             return None
 
-        latestUser = self.uzivatele.find_one(
+        latestUser = self.users.find_one(
             sort=[("_id", pymongo.DESCENDING)])
         latestID = latestUser.get("_id")
         user = {
@@ -150,7 +146,7 @@ class F:
             "userName": username,
             "password": password,
         }
-        self.uzivatele.insert_one(user)
+        self.users.insert_one(user)
 
     def loginUser(self, username, password):
         """Funkce pro prihlaseni uzivatele.
@@ -158,35 +154,25 @@ class F:
             @password: heslo, ktere klient zadal na vstupu
             $return: vraci objekt uzivatele
         """
-        user = self.uzivatele.find_one(
+        user = self.users.find_one(
             {"userName": username, "password": password})
         if user is None:
             print("Wrong username or password!")
             return False
         return user
 
-    def globalRecentTwentyTweets(self):
+    def globalRecentTwentyQuacks(self):
         """Funkce vraci "nejcerstvejsich" 20 tweetu.
             $return: kolekce 20 tweetu, ktere jsou nejnovejsi
         """
-        last20 = self.tweety.find().sort("dateTweeted", -1).limit(20)
+        last20 = self.quacks.find().sort("dateTweeted", -1).limit(20)
         return last20
 
-    def myRecentTwentyTweets(self, userID):
+    def myRecentTwentyQuacks(self, userID):
         """Funkce vraci "nejcerstvejsich" 20 tweetu pridanych konkretnim uzivatelem.
-            @userID: ID uzivatele, jehoz tweety chceme zobrazit
+            @userID: ID uzivatele, jehoz quacks chceme zobrazit
             $return: kolekce 20 tweetu, ktere jsou nejnovejsi u konkretniho uzivatele
         """
         filter = {"userID": userID}
-        last20 = self.tweety.find(filter).sort("dateTweeted", -1).limit(20)
+        last20 = self.quacks.find(filter).sort("dateTweeted", -1).limit(20)
         return last20
-
-    # updateTweet(5, "Premazani zmeneneho obsahu tweetu.")
-
-    # for tweet in recentTwentyTweets():
-    #     print(tweet)
-    # delTweet(22, 1)
-    # print(loginUser("hokus", "pokus"))
-    # addTweet(1, "Test tweet")
-    # for tweet in recentTwentyTweets():
-    #    print(tweet["dateTweeted"])

@@ -3,9 +3,9 @@
 <head>
     <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
     {% if title %}
-    <title>Tweeter - {{title}}</title>
+    <title>QUACKER - {{title}}</title>
     {% else %}
-    <title>Tweeter</title>  
+    <title>Quacker</title>  
     {% endif %}
 </head>
 <div>
@@ -17,5 +17,8 @@
             <a class="split" class="nav-link" href="login">Login</a>
     </nav>
     <div class="conatiner">{%block content%} {% endblock %}</div>
+    <div class="footer">
+        <p>Copyright &copy; Duckers 2023</p>
+      </div>
 </body>
 </html>

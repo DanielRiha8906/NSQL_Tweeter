@@ -1,25 +1,27 @@
 from flask import Flask, render_template, request, redirect
 from BackEnd.classes.user import F
+from BackEnd.classes.userdocker import FD
 from redis import Redis
+from pymongo import MongoClient
 
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 
-db = F()
+def DBD(collectionName):
+    client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
+    dbname = client["nsql_sem"]
+    collection = dbname[collectionName]
+    return collection
+
+
+db = FD(DBD("Users"), DBD("Quacks")) # pouziti docker mongo
+#db = F() # pouziti mongo pres railway
 
 
 @app.route("/")
 def home():
-    tweets = db.globalRecentTwentyTweets()
-    posts = [
-        {
-            'author': tweet['userName'],
-            'title': "title",
-            'content': tweet['tweetContent'],
-            'date_posted': tweet['dateTweeted']
-        }
-        for tweet in tweets
-    ]
+    quacks = db.globalRecentTwentyQuacks()
+    posts = load_20_quacks(quacks)
     return render_template('home.html', posts=posts)
 
 
@@ -33,8 +35,8 @@ def profile():
     userID = redis.get("logged_in")
     if userID is None:
         return redirect('/login')
-    tweets = db.myRecentTwentyTweets(int(userID))
-    posts = load_20_tweets(tweets)
+    tweets = db.myRecentTwentyQuacks(int(userID))
+    posts = load_20_quacks(tweets)
     return render_template('profile.html', posts=posts)
 
 
@@ -49,15 +51,15 @@ def login():
     else:
         return render_template('login.html')
 
-def load_20_tweets(tweets):
+def load_20_quacks(quacks):
     return [
         {
-            'author': tweet['userName'],
+            'author': quack['userName'],
             'title': "title",
-            'content': tweet['tweetContent'],
-            'date_posted': tweet['dateTweeted']
+            'content': quack['quackContent'],
+            'date_posted': quack['dateTweeted']
         }
-        for tweet in tweets
+        for quack in quacks
     ]
 
 
