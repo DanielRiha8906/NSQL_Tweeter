@@ -76,7 +76,7 @@ def load_20_quacks(quacks):
             'author': quack['userName'],
             'title': "title",
             'content': quack['quackContent'],
-            'date_posted': quack['dateTweeted']
+            'date_posted': quack['dateQuacked'],
         } for quack in quacks]
 
 
