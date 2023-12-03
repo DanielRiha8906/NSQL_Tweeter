@@ -8,8 +8,6 @@ services:
       - "5000:5000"
     depends_on:
       - redis
-    volumes:
-      - ./NSQL_Tweeter:/NSQL_Tweeter
 
 
   redis:
@@ -42,7 +40,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongo-db-data:/data/db
+      - ./mongodb_data:/data/db
 
 
 volumes:
