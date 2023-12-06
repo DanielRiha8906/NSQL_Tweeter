@@ -1,18 +1,17 @@
-from flask import Flask, render_template, request, redirect, flash
+from flask import Flask, render_template, request, redirect, flash, session
 from BackEnd.classes.user import F
-from BackEnd.classes.userdocker import FD
+from BackEnd.classes.userdocker import DB
 from redis import Redis
-from pymongo import MongoClient
+
 
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 app.secret_key = 'quack'
 
-client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
-dbname = client["nsql_sem"]
-
-db = FD(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
-#db = F() # pouziti mongo pres railway
+#client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
+#dbname = client["nsql_sem"]
+#db = DB(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
+db = F() # pouziti mongo pres railway
 
 
 @app.route("/")
@@ -29,7 +28,7 @@ def about():
 
 @app.route("/profile")
 def profile():
-    userID = redis.get("logged_in")
+    userID = session['user_ID']
     if userID is None:
         return redirect('/login')
     tweets = db.myRecentTwentyQuacks(int(userID))
@@ -45,7 +44,7 @@ def login():
         user = db.loginUser(user, passw)
         if user != False:
             userID = user["_id"]
-            redis.set("logged_in", str(userID))
+            session['user_ID'] = userID
             flash('You are now logged in', 'success')
             return redirect('/profile')
         else:
@@ -71,12 +70,18 @@ def register():
         return render_template('register.html')
 
 
+@app.route("/logout")
+def logout():
+    session['user_ID'] = None
+    return redirect('/login')
+
+
 def load_20_quacks(quacks):
     return [ {
             'author': quack['userName'],
             'title': "title",
-            'content': quack['quackContent'],
-            'date_posted': quack['dateQuacked'],
+            'content': quack['tweetContent'],
+            'date_posted': quack['dateTweeted'],
         } for quack in quacks]
 
 
