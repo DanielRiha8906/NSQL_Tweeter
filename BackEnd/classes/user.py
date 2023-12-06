@@ -31,8 +31,8 @@ class F:
             "_id": self.quacks.count_documents({}) + 1,
             "userID": userID,
             "userName": currentUser["userName"],
-            "quackContent": body,
-            "dateQuacked": datetime.now().strftime("%H:%M:%d:%m:%Y"),
+            "tweetContent": body,
+            "dateTweeted": datetime.now().strftime("%H:%M:%d:%m:%Y"),
             "likesCount": 0,
         }
         self.quacks.insert_one(quack)
@@ -72,12 +72,12 @@ class F:
     def updateQuack(self, quackID, newContent, userID):
         """Funkce posila pozadavek na aktualizaci quacku podle ID, prijima novy obsah quacku.
             @quackID: ID quacku, ktery chceme aktualizovat
-            @newContent: novy obsah tweetu ktery aktualizujeme
+            @newContent: novy obsah quacku ktery aktualizujeme
             @userID: ID (aktualniho) uzivatele, ktery chce prispevek aktualizovat, pro overeni zda je puvodnim autorem
         """
-        currentTweet = self.quacks.find_one({"_id": quackID})
-        quackAuthor = currentTweet.get("userID")
-        if currentTweet is None:
+        currentQuack = self.quacks.find_one({"_id": quackID})
+        quackAuthor = currentQuack.get("userID")
+        if currentQuack is None:
             print("You cannot update a quack that does not exist!")
             return None
         if quackAuthor != userID:
@@ -109,7 +109,7 @@ class F:
         return user
 
     def upvoteQuack(self, userID, quackID):
-        """Funkce umoznuje uzivateli interagovat s quackem. Prida ID quacku do pole likedTweets daneho uzivatele a vice versa.
+        """Funkce umoznuje uzivateli interagovat s quackem. Prida ID quacku do pole likedQuacks daneho uzivatele a vice versa.
             @userID: ID aktualniho uzivatele
             @quackID: ID quacku, ktery chce uzivatel "likenout"
         """
@@ -125,7 +125,7 @@ class F:
                 "You have already upvoted this quack, do you want to cancel your upvote?")
             return False
         self.users.update_one(
-            {"_id": userID}, {"$push": {"upvotedTweets": quackID}})
+            {"_id": userID}, {"$push": {"upvotedQuacsk": quackID}})
         self.quacks.update_one(
             {"_id": quackID}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": userID}})
 
@@ -162,17 +162,17 @@ class F:
         return user
 
     def globalRecentTwentyQuacks(self):
-        """Funkce vraci "nejcerstvejsich" 20 tweetu.
-            $return: kolekce 20 tweetu, ktere jsou nejnovejsi
+        """Funkce vraci "nejcerstvejsich" 20 quacku.
+            $return: kolekce 20 quacku, ktere jsou nejnovejsi
         """
-        last20 = self.quacks.find().sort("dateTweeted", -1).limit(20)
+        last20 = self.quacks.find().sort("dateQuacked", -1).limit(20)
         return last20
 
     def myRecentTwentyQuacks(self, userID):
-        """Funkce vraci "nejcerstvejsich" 20 tweetu pridanych konkretnim uzivatelem.
+        """Funkce vraci "nejcerstvejsich" 20 quacku pridanych konkretnim uzivatelem.
             @userID: ID uzivatele, jehoz quacks chceme zobrazit
-            $return: kolekce 20 tweetu, ktere jsou nejnovejsi u konkretniho uzivatele
+            $return: kolekce 20 quacku, ktere jsou nejnovejsi u konkretniho uzivatele
         """
         filter = {"userID": userID}
-        last20 = self.quacks.find(filter).sort("dateTweeted", -1).limit(20)
+        last20 = self.quacks.find(filter).sort("dateQuacked", -1).limit(20)
         return last20
