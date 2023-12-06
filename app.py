@@ -1,15 +1,17 @@
 from flask import Flask, render_template, request, redirect, flash, session
 from BackEnd.classes.user import F
-from BackEnd.classes.userdocker import FD
+from BackEnd.classes.userdocker import DB
 from redis import Redis
 from pymongo import MongoClient
+
+
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 app.secret_key = 'quack'
 
 client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
 dbname = client["nsql_sem"]
-db = FD(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
+db = DB(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
 #db = F() # pouziti mongo pres railway
 
 
