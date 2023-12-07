@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 import pymongo
 from datetime import datetime
 
-
+load_dotenv()
 class F:
     users: DB
     quacks: DB

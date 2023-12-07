@@ -20,6 +20,9 @@ def home():
     posts = load_20_quacks(quacks)
     return render_template('home.html', posts=posts)
 
+@app.route("/TOS")
+def tos():
+    return render_template('terms_of_service.html')
 
 @app.route("/about")
 def about():
