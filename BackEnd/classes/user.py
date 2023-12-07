@@ -7,6 +7,8 @@ from datetime import datetime
 
 
 class F:
+    load_dotenv()
+
     users: DB
     quacks: DB
 
@@ -16,7 +18,7 @@ class F:
 
     def addQuack(self, userID, body):
         """Funkce pro pridani quacku ktera bere jako argument ID uzivatele a obsahu quacku,
-        pokud neexistuje tak mu neumozni prispevek vytvorit.
+            pokud neexistuje tak mu neumozni prispevek vytvorit.
             @userID: id aktualniho uzivatele
             @body: obsah quacku, ktery uzivatel na vstupu zadal
         """
@@ -97,6 +99,7 @@ class F:
             return None
         mojeQuacks = self.quacks.find({"userID": userID})
         return mojeQuacks
+
     def whoAmI(self, userID):
         """Funkce vraci zaznam o uzivateli s danym ID.
             @userID: ID aktualniho uzivatele
@@ -121,13 +124,10 @@ class F:
             print("You cannot upvote a quack that does not exist!")
             return None
         if userID in self.quacks.find_one({"_id": quackID}).get("likedBy"):
-            print(
-                "You have already upvoted this quack, do you want to cancel your upvote?")
+            print("You have already upvoted this quack, do you want to cancel your upvote?")
             return False
-        self.users.update_one(
-            {"_id": userID}, {"$push": {"upvotedQuacsk": quackID}})
-        self.quacks.update_one(
-            {"_id": quackID}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": userID}})
+        self.users.update_one({"_id": userID}, {"$push": {"upvotedQuacsk": quackID}})
+        self.quacks.update_one({"_id": quackID}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": userID}})
 
     def registerUser(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
@@ -138,8 +138,7 @@ class F:
             print("Username is already taken!")
             return None
 
-        latestUser = self.users.find_one(
-            sort=[("_id", pymongo.DESCENDING)])
+        latestUser = self.users.find_one(sort=[("_id", pymongo.DESCENDING)])
         latestID = latestUser.get("_id")
         user = {
             "_id": latestID + 1,
@@ -154,8 +153,7 @@ class F:
             @password: heslo, ktere klient zadal na vstupu
             $return: vraci objekt uzivatele
         """
-        user = self.users.find_one(
-            {"userName": username, "password": password})
+        user = self.users.find_one({"userName": username, "password": password})
         if user is None:
             print("Wrong username or password!")
             return False
