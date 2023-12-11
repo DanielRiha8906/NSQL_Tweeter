@@ -12,19 +12,21 @@ app.secret_key = 'quack'
 #dbname = client["nsql_sem"]
 #db = DB(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
 db = F() # pouziti mongo pres railway
-
-account_name = {}
-account_name=db.whoAmI(session['user_ID'])
-user = account_name['userName']
-
+def get_user():
+    if 'user_ID' in session:
+        return db.whoAmI(session['user_ID'])
+    return None
 @app.route("/") 
 def home():
     quacks = db.globalRecentTwentyQuacks()
     posts = load_20_quacks(quacks)
-    if user is None:
-        return render_template('home.html', posts=posts, account_name=user)
-    else:
+    if get_user() is None:
         return render_template('home.html', posts=posts)
+    else:
+        account_name = {}
+        account_name=db.whoAmI(session['user_ID'])
+        user = account_name['userName']
+        return render_template('home.html', posts=posts, account_name=user)
         
 
 @app.route("/TOS")
@@ -33,10 +35,13 @@ def tos():
 
 @app.route("/about")
 def about():
-    if user is None:
-        return render_template('home.html', posts=posts, account_name=user)
-    else:
+    if get_user() is None:
         return render_template('about.html', title='About')
+    else:
+        account_name = {}
+        account_name=db.whoAmI(session['user_ID'])
+        user = account_name['userName']
+        return render_template('about.html',title='About', account_name=user)
     
 
 
@@ -45,12 +50,12 @@ def profile():
     userID = session['user_ID']
     if userID is None:
         return redirect('/login')
+    account_name = {}
+    account_name=db.whoAmI(session['user_ID'])
+    user = account_name['userName']
     tweets = db.myRecentTwentyQuacks(int(userID))
     posts = load_20_quacks(tweets)
-    if user is None:
-        return render_template('home.html', posts=posts, account_name=user)
-    else:
-        return render_template('profile.html', title='About')
+    return render_template('profile.html', posts=posts, account_name=user, title=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
