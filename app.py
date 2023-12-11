@@ -13,18 +13,18 @@ app.secret_key = 'quack'
 #db = DB(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
 db = F() # pouziti mongo pres railway
 def get_user():
-    if 'user_ID' in session:
-        return db.whoAmI(session['user_ID'])
+    if 'user_id' in session:
+        return db.who_am_i(session['user_id'])
     return None
 @app.route("/") 
 def home():
-    quacks = db.globalRecentTwentyQuacks()
+    quacks = db.global_recent_twenty_quacks()
     posts = load_20_quacks(quacks)
     if get_user() is None:
         return render_template('home.html', posts=posts)
     else:
         account_name = {}
-        account_name=db.whoAmI(session['user_ID'])
+        account_name=db.who_am_i(session['user_id'])
         user = account_name['userName']
         return render_template('home.html', posts=posts, account_name=user)
         
@@ -39,7 +39,7 @@ def about():
         return render_template('about.html', title='About')
     else:
         account_name = {}
-        account_name=db.whoAmI(session['user_ID'])
+        account_name=db.who_am_i(session['user_id'])
         user = account_name['userName']
         return render_template('about.html',title='About', account_name=user)
     
@@ -47,14 +47,14 @@ def about():
 
 @app.route("/profile")
 def profile():
-    userID = session['user_ID']
-    if userID is None:
+    user_id = session['user_id']
+    if user_id is None:
         return redirect('/login')
     account_name = {}
-    account_name=db.whoAmI(session['user_ID'])
+    account_name=db.who_am_i(session['user_id'])
     user = account_name['userName']
-    tweets = db.myRecentTwentyQuacks(int(userID))
-    posts = load_20_quacks(tweets)
+    quacks = db.my_recent_twenty_quacks(int(user_id))
+    posts = load_20_quacks(quacks)
     return render_template('profile.html', posts=posts, account_name=user, title=user)
 
 
@@ -63,10 +63,10 @@ def login():
     if request.method == "POST":
         user = str(request.form['username'])
         passw = str(request.form['password'])
-        user = db.loginUser(user, passw)
+        user = db.login_user(user, passw)
         if user:
-            userID = user["_id"]
-            session['user_ID'] = userID
+            user_id = user["_id"]
+            session['user_id'] = user_id
             flash('You are now logged in', 'success')
             return redirect('/profile')
         else:
@@ -81,7 +81,7 @@ def register():
     if request.method == "POST":
         user = str(request.form['username'])
         passw = str(request.form['password'])
-        reg = db.registerUser(user, passw)
+        reg = db.register_user(user, passw)
         if reg != None:
             flash('You are now registered and can log in', 'success')
             return redirect('/login')
@@ -94,16 +94,16 @@ def register():
 
 @app.route("/logout")
 def logout():
-    session['user_ID'] = None
+    session['user_id'] = None
     return redirect('/login')
 
 
 def load_20_quacks(quacks):
     return [ {
-            'author': quack['userName'],
+            'author': quack['username'],
             'title': "title",
-            'content': quack['tweetContent'],
-            'date_posted': quack['dateTweeted'],
+            'content': quack['quck_content'],
+            'date_posted': quack['date_quacked'],
         } for quack in quacks]
 
 
