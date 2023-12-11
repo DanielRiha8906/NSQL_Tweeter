@@ -45,7 +45,7 @@ def login():
         user = str(request.form['username'])
         passw = str(request.form['password'])
         user = db.loginUser(user, passw)
-        if user != False:
+        if user:
             userID = user["_id"]
             session['user_ID'] = userID
             flash('You are now logged in', 'success')
