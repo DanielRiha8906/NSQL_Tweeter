@@ -44,6 +44,28 @@ def about():
         return render_template('about.html',title='About', account_name=user)
     
 
+@app.route("/quack", methods=["GET", "POST"])
+def post_quack():
+    """Metoda pro postovani novych quacku na FrontEndu provazanim s metodou z BackEndu.
+    Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. A kontrola jestli neprekrocil maximalni delku quacku(255), tento check je aktualne 'duplicitni'.
+    """
+    user_id = session["user_id"]
+    if user_id is None:
+        flash("You cannot post a quack, if you are not logged in!")
+        return redirect("/login")
+    elif user_id is not None and request.method == "POST":
+        content = str(request.form["quack_content"])
+        if len(content) == 0:
+            flash("Your cannot quack an empty tweet!", "danger")
+            return redirect("/profile")
+        elif len(content) > 255:
+            flash("Your quack is too long!", "danger")
+            return redirect("/profile")
+        else:
+            flash("Your quack has been successfully posted!", "success")
+            db.add_quack(user_id, content)
+            return redirect("/profile")
+
 
 @app.route("/profile")
 def profile():
@@ -100,10 +122,10 @@ def logout():
 
 def load_20_quacks(quacks):
     return [ {
-            'author': quack['username'],
+            'author': quack['userName'],
             'title': "title",
-            'content': quack['quck_content'],
-            'date_posted': quack['date_quacked'],
+            'content': quack['tweetContent'],
+            'date_posted': quack['dateTweeted'],
         } for quack in quacks]
 
 
