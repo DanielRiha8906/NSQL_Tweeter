@@ -13,18 +13,19 @@ app.secret_key = 'quack'
 #db = DB(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
 db = F() # pouziti mongo pres railway
 
+account_name = {}
+account_name=db.whoAmI(session['user_ID'])
+user = account_name['userName']
 
 @app.route("/") 
 def home():
     quacks = db.globalRecentTwentyQuacks()
     posts = load_20_quacks(quacks)
-    if session['user_ID'] is None:
-        return render_template('home.html', posts=posts)
-    else:
-        account_name = {}
-        account_name=db.whoAmI(session['user_ID'])
-        user = account_name['userName']
+    if user is None:
         return render_template('home.html', posts=posts, account_name=user)
+    else:
+        return render_template('home.html', posts=posts)
+        
 
 @app.route("/TOS")
 def tos():
@@ -32,7 +33,11 @@ def tos():
 
 @app.route("/about")
 def about():
-    return render_template('about.html', title='About')
+    if user is None:
+        return render_template('home.html', posts=posts, account_name=user)
+    else:
+        return render_template('about.html', title='About')
+    
 
 
 @app.route("/profile")
@@ -42,7 +47,10 @@ def profile():
         return redirect('/login')
     tweets = db.myRecentTwentyQuacks(int(userID))
     posts = load_20_quacks(tweets)
-    return render_template('profile.html', posts=posts)
+    if user is None:
+        return render_template('home.html', posts=posts, account_name=user)
+    else:
+        return render_template('profile.html', title='About')
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -70,10 +78,10 @@ def register():
         passw = str(request.form['password'])
         reg = db.registerUser(user, passw)
         if reg != None:
-            flash('You are now registered and can log in')
+            flash('You are now registered and can log in', 'success')
             return redirect('/login')
         else:
-            flash('The username is already taken')
+            flash('The username is already taken', 'danger')
             return redirect('/register')
     else:
         return render_template('register.html')
