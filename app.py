@@ -14,11 +14,17 @@ app.secret_key = 'quack'
 db = F() # pouziti mongo pres railway
 
 
-@app.route("/")
+@app.route("/") 
 def home():
     quacks = db.globalRecentTwentyQuacks()
     posts = load_20_quacks(quacks)
-    return render_template('home.html', posts=posts)
+    if session['user_ID'] is None:
+        return render_template('home.html', posts=posts)
+    else:
+        account_name = {}
+        account_name=db.whoAmI(session['user_ID'])
+        user = account_name['userName']
+        return render_template('home.html', posts=posts, account_name=user)
 
 @app.route("/TOS")
 def tos():
