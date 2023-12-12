@@ -72,6 +72,13 @@ def post_quack():
             return redirect("/profile")
 
 
+@app.route("/like", methods=["POST"])
+def like():
+    user_id = session["user_id"]
+    quack_id = request.form["quack_id"]
+    upvote = db.upvote_quack(user_id, quack_id)
+
+
 @app.route("/profile")
 def profile():
     user_id = session['user_id']
@@ -131,6 +138,7 @@ def load_20_quacks(quacks):
             'title': "title",
             'content': quack['quack_content'],
             'date_posted': datetime.strptime(quack['date_quacked'], "%Y-%m-%dT%H:%M:%S.%f").strftime("%H:%M - %d/%m/%Y"),
+            'likes': quack['likes'],
         } for quack in quacks]
 
 

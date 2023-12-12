@@ -32,6 +32,7 @@ class DB:
             "username": current_user["username"],
             "quack_content": body,
             "date_quacked": datetime.now().isoformat(),
+            "likes": 0
         }
         self.quacks.insert_one(quack)
         return 0
@@ -122,10 +123,10 @@ class DB:
         user = self.users.find_one({"_id": user_id})
         if user is None:
             print("You are not logged in!")
-            return None
+            return False
         if self.quacks.find_one({"_id": quack_id}) is None:
             print("You cannot upvote a quack that does not exist!")
-            return None
+            return False
         if user_id in self.quacks.find_one({"_id": quack_id}).get("likedBy"):
             print(
                 "You have already upvoted this quack, do you want to cancel your upvote?"
@@ -135,7 +136,7 @@ class DB:
         self.quacks.update_one(
             {"_id": quack_id}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": user_id}}
         )
-
+        return True
 
     def register_user(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
