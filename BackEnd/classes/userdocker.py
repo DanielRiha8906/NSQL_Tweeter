@@ -17,12 +17,10 @@ class DB:
         @body: obsah quacku, ktery uzivatel na vstupu zadal
         """
         current_user = self.users.find_one({"_id": user_id})
-        if current_user is None:
-            print("You have to login, to be able to post a quack!")
-            return None
         if len(body) > 255:
-            print("Quack is too long!")
-            return None
+            return 1 # too long
+        if len(body) == 0:
+            return 2 # empty
         latest_quack = self.quacks.find().sort({"_id": -1}).limit(1)
         if latest_quack is None:
             latest_id = 0
@@ -36,7 +34,7 @@ class DB:
             "date_quacked": datetime.now().isoformat(),
         }
         self.quacks.insert_one(quack)
-
+        return 0
 
     def del_quack(self, quack_id, user_id):
         """Funkce posila pozadavek na vymazani quacku podle ID.

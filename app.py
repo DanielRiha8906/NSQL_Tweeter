@@ -2,7 +2,7 @@ from flask import Flask, render_template, request, redirect, flash, session
 from BackEnd.classes.userdocker import DB
 from redis import Redis
 from pymongo import MongoClient
-
+from datetime import datetime
 
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
@@ -10,8 +10,7 @@ app.secret_key = 'quack'
 
 client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
 dbname = client["nsql_sem"]
-db = DB(dbname["users"], dbname["quacks"]) # pouziti docker mongo
-#db = Database() # pouziti mongo pres railway
+db = DB(dbname["users"], dbname["quacks"])
 
 
 def get_user():
@@ -60,15 +59,16 @@ def post_quack():
         return redirect("/login")
     elif user_id is not None and request.method == "POST":
         content = str(request.form["quack_content"])
-        if len(content) == 0:
-            flash("Your cannot quack an empty tweet!", "danger")
+        posted = db.add_quack(user_id, content)
+
+        if posted == 2:
+            flash("Your cannot post an empty quack!", "danger")
             return redirect("/profile")
-        elif len(content) > 255:
+        elif posted == 1:
             flash("Your quack is too long!", "danger")
             return redirect("/profile")
         else:
             flash("Your quack has been successfully posted!", "success")
-            db.add_quack(user_id, content)
             return redirect("/profile")
 
 
@@ -130,7 +130,7 @@ def load_20_quacks(quacks):
             'author': quack['username'],
             'title': "title",
             'content': quack['quack_content'],
-            'date_posted': quack['date_quacked'],
+            'date_posted': datetime.strptime(quack['date_quacked'], "%Y-%m-%dT%H:%M:%S.%f").strftime("%H:%M - %d/%m/%Y"),
         } for quack in quacks]
 
 
