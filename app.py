@@ -1,5 +1,4 @@
 from flask import Flask, render_template, request, redirect, flash, session
-from BackEnd.classes.user import Database
 from BackEnd.classes.userdocker import DB
 from redis import Redis
 from pymongo import MongoClient

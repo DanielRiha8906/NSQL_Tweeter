@@ -34,6 +34,7 @@ class DB:
         }
         self.quacks.insert_one(quack)
 
+
     def del_quack(self, quack_id, user_id):
         """Funkce posila pozadavek na vymazani quacku podle ID.
         @quack_id: ID quacku, ktery chceme vymazat
@@ -50,6 +51,7 @@ class DB:
 
         self.quacks.delete_one({"_id": quack_id})
 
+
     def update_bio(self, user_id, new_bio):
         """Funkce posila pozadavek na updatenuti biografie uzivatele podle ID, prijima novou biografii.
         @user_id: ID (aktualniho) uzivatele, ktery chce biografii aktualizovat.
@@ -58,6 +60,7 @@ class DB:
         filter = {"_id": user_id}
         self.quacks.update_one(filter, {"$set": {"bio": new_bio}})
 
+
     def update_name(self, user_id, new_name):
         """Funkce pro aktualizovani username uzivatele
         @user_id: ID (aktualniho) uzivatele, ktery chce username aktualizovat
@@ -65,6 +68,7 @@ class DB:
         """
         filter = {"_id": user_id}
         self.quacks.update_one(filter, {"$set": {"username": new_name}})
+
 
     def update_quack(self, quack_id, new_content, user_id):
         """Funkce posila pozadavek na aktualizaci quacku podle ID, prijima novy obsah quacku.
@@ -84,6 +88,7 @@ class DB:
         new_body = {"$set": {"quack_content": new_content}}
         self.quacks.update_one(filter, new_body)
 
+
     def my_quacks(self, user_id):
         """Funkce vraci veskere quacky ktery uzivatel s danym ID pridal.
         @user_id: ID aktualniho uzivatele
@@ -95,6 +100,7 @@ class DB:
         my_quacks = self.quacks.find(user_id)
         return my_quacks
 
+
     def who_am_i(self, user_id):
         """Funkce vraci zaznam o uzivateli s danym ID.
         @user_id: ID aktualniho uzivatele
@@ -105,6 +111,7 @@ class DB:
             print("You are not logged in!")
             return None
         return user
+
 
     def upvote_quack(self, user_id, quack_id):
         """Funkce umoznuje uzivateli interagovat s quackem. Prida ID quacku do pole likedQuacks daneho uzivatele a vice versa.
@@ -128,6 +135,7 @@ class DB:
             {"_id": quack_id}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": user_id}}
         )
 
+
     def register_user(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
         @username: uzivatelske jmeno, ktere klient zadal na vstupu
@@ -138,13 +146,17 @@ class DB:
             return None
 
         latest_user = self.users.find_one(sort=[("_id", pymongo.DESCENDING)])
-        latest_id = latest_user.get("_id")
+        if latest_user is None:
+            latest_id = 0
+        else:
+            latest_id = latest_user.get("_id")
         user = {
             "_id": latest_id + 1,
             "username": username,
             "password": password,
         }
         self.users.insert_one(user)
+
 
     def login_user(self, username, password):
         """Funkce pro prihlaseni uzivatele.
@@ -158,12 +170,14 @@ class DB:
             return False
         return user
 
+
     def global_recent_twenty_quacks(self):
         """Funkce vraci "nejcerstvejsich" 20 quacku.
         $return: kolekce 20 quacku, ktere jsou nejnovejsi
         """
         last20 = (self.quacks.find().sort("dateQuacked", -1).limit(20))
         return last20
+
 
     def my_recent_twenty_quacks(self, user_id):
         """Funkce vraci "nejcerstvejsich" 20 quacku pridanych konkretnim uzivatelem.
