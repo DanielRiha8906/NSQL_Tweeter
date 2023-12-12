@@ -1,21 +1,26 @@
 from flask import Flask, render_template, request, redirect, flash, session
-from BackEnd.classes.user import F
+from BackEnd.classes.user import Database
 from BackEnd.classes.userdocker import DB
 from redis import Redis
+from pymongo import MongoClient
 
 
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 app.secret_key = 'quack'
 
-#client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
-#dbname = client["nsql_sem"]
-#db = DB(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
-db = F() # pouziti mongo pres railway
+client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
+dbname = client["nsql_sem"]
+db = DB(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
+#db = Database() # pouziti mongo pres railway
+
+
 def get_user():
     if 'user_id' in session:
         return db.who_am_i(session['user_id'])
     return None
+
+
 @app.route("/") 
 def home():
     quacks = db.global_recent_twenty_quacks()
@@ -32,6 +37,7 @@ def home():
 @app.route("/TOS")
 def tos():
     return render_template('terms_of_service.html')
+
 
 @app.route("/about")
 def about():
@@ -124,9 +130,9 @@ def load_20_quacks(quacks):
     return [ {
             'author': quack['userName'],
             'title': "title",
-            'content': quack['tweetContent'],
-            'date_posted': quack['dateTweeted'],
-        } for quack in quacks]
+            'content': quack['quackContent'],
+            'date_posted': quack['dateQuacked'],
+        } for quack in quacks][::-1]
 
 
 if __name__ == '__main__':
