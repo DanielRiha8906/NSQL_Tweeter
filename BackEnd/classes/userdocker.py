@@ -24,13 +24,16 @@ class DB:
             print("Quack is too long!")
             return None
         latest_quack = self.quacks.find().sort({"_id": -1}).limit(1)
-        latest_id = latest_quack[0].get("_id")
+        if latest_quack is None:
+            latest_id = 0
+        else:
+            latest_id = latest_quack[0].get("_id")
         quack = {
             "_id": latest_id + 1,
-            "userID": user_id,
-            "userName": current_user["userName"],
-            "quackContent": body,
-            "dateQuacked": datetime.now().isoformat(),
+            "user_id": user_id,
+            "username": current_user["username"],
+            "quack_content": body,
+            "date_quacked": datetime.now().isoformat(),
         }
         self.quacks.insert_one(quack)
 
@@ -143,19 +146,21 @@ class DB:
         """
         if self.users.find_one({"username": username}) is not None:
             print("This username is already taken!")
-            return None
+            return False
 
-        latest_user = self.users.find_one(sort=[("_id", pymongo.DESCENDING)])
-        if latest_user is None:
-            latest_id = 0
         else:
-            latest_id = latest_user.get("_id")
-        user = {
-            "_id": latest_id + 1,
-            "username": username,
-            "password": password,
-        }
-        self.users.insert_one(user)
+            latest_user = self.users.find_one(sort=[("_id", pymongo.DESCENDING)])
+            if latest_user is None:
+                latest_id = 0
+            else:
+                latest_id = latest_user.get("_id")
+            user = {
+                "_id": latest_id + 1,
+                "username": username,
+                "password": password,
+            }
+            self.users.insert_one(user)
+            return True
 
 
     def login_user(self, username, password):
@@ -164,7 +169,7 @@ class DB:
         @password: heslo, ktere klient zadal na vstupu
         $return: vraci objekt uzivatele
         """
-        user = self.users.find_one({"userName": username, "password": password})
+        user = self.users.find_one({"username": username, "password": password})
         if user is None:
             print("Wrong username or password!")
             return False
@@ -175,7 +180,7 @@ class DB:
         """Funkce vraci "nejcerstvejsich" 20 quacku.
         $return: kolekce 20 quacku, ktere jsou nejnovejsi
         """
-        last20 = (self.quacks.find().sort("dateQuacked", -1).limit(20))
+        last20 = (self.quacks.find().sort("date_quacked", -1).limit(20))
         return last20
 
 
@@ -185,7 +190,7 @@ class DB:
         $return: kolekce 20 quacku, ktere jsou nejnovejsi u konkretniho uzivatele
         """
         filter = {"user_id": user_id}
-        last20 = self.quacks.find(filter).sort("dateQuacked", -1).limit(20)
+        last20 = self.quacks.find(filter).sort("date_quacked", -1).limit(20)
         return last20
 
 

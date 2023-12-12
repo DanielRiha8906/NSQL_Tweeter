@@ -10,7 +10,7 @@ app.secret_key = 'quack'
 
 client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
 dbname = client["nsql_sem"]
-db = DB(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
+db = DB(dbname["users"], dbname["quacks"]) # pouziti docker mongo
 #db = Database() # pouziti mongo pres railway
 
 
@@ -29,7 +29,7 @@ def home():
     else:
         account_name = {}
         account_name=db.who_am_i(session['user_id'])
-        user = account_name['userName']
+        user = account_name['username']
         return render_template('home.html', posts=posts, account_name=user)
         
 
@@ -45,7 +45,7 @@ def about():
     else:
         account_name = {}
         account_name=db.who_am_i(session['user_id'])
-        user = account_name['userName']
+        user = account_name['username']
         return render_template('about.html',title='About', account_name=user)
     
 
@@ -79,7 +79,7 @@ def profile():
         return redirect('/login')
     account_name = {}
     account_name=db.who_am_i(session['user_id'])
-    user = account_name['userName']
+    user = account_name['username']
     quacks = db.my_recent_twenty_quacks(int(user_id))
     posts = load_20_quacks(quacks)
     return render_template('profile.html', posts=posts, account_name=user, title=user)
@@ -109,7 +109,7 @@ def register():
         user = str(request.form['username'])
         passw = str(request.form['password'])
         reg = db.register_user(user, passw)
-        if reg != None:
+        if reg:
             flash('You are now registered and can log in', 'success')
             return redirect('/login')
         else:
@@ -127,11 +127,11 @@ def logout():
 
 def load_20_quacks(quacks):
     return [ {
-            'author': quack['userName'],
+            'author': quack['username'],
             'title': "title",
-            'content': quack['quackContent'],
-            'date_posted': quack['dateQuacked'],
-        } for quack in quacks][::-1]
+            'content': quack['quack_content'],
+            'date_posted': quack['date_quacked'],
+        } for quack in quacks]
 
 
 if __name__ == '__main__':
