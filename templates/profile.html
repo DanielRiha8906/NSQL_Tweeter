@@ -23,6 +23,26 @@
   
     {% endfor %}
   </div>
+  <div class="left-0 w-full flex justify-center">
+    <div class="flex">
+      <!-- Previous Button -->
+      <a href="#" class="flex items-center justify-center px-4 h-10 me-3 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+        <svg class="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
+        </svg>
+        Previous
+      </a>
+      <a href="#" class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+        Next
+        <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+  <div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5 bg-gray-800">
+  <div class="px-10 py-10 border-transparent"></div>
+  </div>
   <form method="post" action="/quack" class="fixed bottom-6 bg-gray-900 left-0 right-0 p-2 opacity-0 hover:opacity-100 transition-opacity duration-300" id="hover-form">
     <textarea name="quack_content" class="w-full p-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-blue-500" placeholder="What's on your mind?"></textarea>
     <button class="mt-2 px-4 py-0 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600" type="submit">
