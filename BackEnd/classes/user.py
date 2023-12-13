@@ -167,20 +167,24 @@ class F:
             return False
         return user
 
-    def global_recent_twenty_quacks(self):
+    def global_recent_twenty_quacks(self, range):
         """Funkce vraci "nejcerstvejsich" 20 quacku.
         $return: kolekce 20 quacku, ktere jsou nejnovejsi
         """
-        last20 = self.quacks.find().sort("dateTweeted", -1).limit(20)
-        return last20
+        offset = range * 20
+        limit = 20
+        paginated_quacks = self.quacks.find().sort("dateTweeted", -1).skip(offset).limit(limit)
+        return paginated_quacks
 
-    def my_recent_twenty_quacks(self, user_id):
+    def my_recent_twenty_quacks(self, user_id, range):
         """Funkce vraci "nejcerstvejsich" 20 quacku pridanych konkretnim uzivatelem.
         @user_id: ID uzivatele, jehoz quacks chceme zobrazit
         $return: kolekce 20 quacku, ktere jsou nejnovejsi u konkretniho uzivatele
         """
         filter = {"userID": user_id}
-        last20 = self.quacks.find(filter).sort("dateTweeted", -1).limit(20)
-        return last20
-
-
+        offset = range * 20
+        limit = 20
+        paginated_quacks = self.quacks.find(filter).sort("dateTweeted", -1).skip(offset).limit(limit)
+        return paginated_quacks
+        # last20 = self.quacks.find(filter).sort("dateTweeted", -1).limit(20)
+        # return last20
