@@ -16,13 +16,6 @@ db = DB(dbname["users"], dbname["quacks"])
 Debug(app)
 
 
-
-def get_user():
-    if 'user_id' in session:
-        return db.who_am_i(session['user_id'])
-    return None
-
-
 @app.route("/", methods=["GET", "POST"])
 @app.route("/home", methods=["GET", "POST"]) 
 def home():
@@ -57,30 +50,6 @@ def about():
         return render_template('about.html',title='About', account_name=user)
     
 
-def post_quack(to_page):
-    """Metoda pro postovani novych quacku na FrontEndu provazanim s metodou z BackEndu.
-    Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. A kontrola jestli neprekrocil maximalni delku quacku(255), tento check je aktualne 'duplicitni'.
-    """
-    user_id = session["user_id"]
-    if user_id is None:
-        flash("You cannot post a quack, if you are not logged in!")
-        return redirect("/login")
-    else:
-        content = str(request.form["quack_content"])
-        posted = db.add_quack(user_id, content)
-
-        if posted == 2:
-            flash("Your cannot post an empty quack!", "danger")
-            return redirect(f"/{to_page}")
-        elif posted == 1:
-            flash("Your quack is too long!", "danger")
-            return redirect(f"/{to_page}")
-        else:
-            cache_it()
-            flash("Your quack has been successfully posted!", "success")
-            return redirect(f"/{to_page}")
-
-
 @app.route("/like", methods=["POST"])
 def like():
     user_id = session["user_id"]
@@ -90,6 +59,7 @@ def like():
 
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
+    """Metoda pro zobrazovani profilu. Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage."""
     if request.method == "POST":
         cache_it()
         return post_quack('profile')
@@ -146,6 +116,7 @@ def logout():
 
 
 def load_20_quacks(quacks):
+    """Metoda pro ziskani 20 nejnovensich quacku."""
     return [ {
             'author': quack['username'],
             'title': "title",
@@ -156,10 +127,46 @@ def load_20_quacks(quacks):
 
 
 def cache_it():
+    """Metoda pro cacheovani vsech 20 nejnovensich quacku."""
     redis.set("quacks", json.dumps(load_20_quacks(db.global_recent_twenty_quacks())))
 
+
 def cached():
+    """Metoda pro ziskani vsech 20 nejnovensich quacku z cache."""
     return json.loads(redis.get("quacks"))
+
+
+def post_quack(to_page):
+    """Metoda pro postovani novych quacku na FrontEndu provazanim s metodou z BackEndu.
+    Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. A kontrola jestli neprekrocil maximalni delku quacku(255),
+    tento check je aktualne 'duplicitni'.
+    """
+    user_id = session["user_id"]
+    if user_id is None:
+        flash("You cannot post a quack, if you are not logged in!")
+        return redirect("/login")
+    else:
+        content = str(request.form["quack_content"])
+        posted = db.add_quack(user_id, content)
+
+        if posted == 2:
+            flash("Your cannot post an empty quack!", "danger")
+            return redirect(f"/{to_page}")
+        elif posted == 1:
+            flash("Your quack is too long!", "danger")
+            return redirect(f"/{to_page}")
+        else:
+            cache_it()
+            flash("Your quack has been successfully posted!", "success")
+            return redirect(f"/{to_page}")
+        
+
+def get_user():
+    """Metoda pro ziskani aktualniho uzivatele."""
+    if 'user_id' in session:
+        return db.who_am_i(session['user_id'])
+    return None
+
 
 if __name__ == '__main__':
     app.run(host= "0.0.0.0", port=5000, debug=True)
