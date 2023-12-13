@@ -1,27 +1,87 @@
 {% extends 'layout.html' %} {% block content%}
-<div class="flex justify-center flex-col w-[40rem] mx-auto gap-5 mb-20">
+<div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5">
   {% for post in posts %}
-  <div class="px-10 py-10 border rounded-lg border-gray-200">
-    <a href="#" class="group block flex-shrink-0">
-      <div class="flex items-center">
-        <div class="ml-3">
-          <p class="text-base leading-6 font-medium text-white">
-            {{post.author}}
-            <span class="text -sm leading-5 font-medium text-gray-400 group-hover:text-gray-300 transition ease-in-out duration-150">
-              @{{post.author}} {{post.date_posted}}
-            </span>
-          </p>
+    <div class="px-10 py-10 border rounded-lg border-gray-200 relative">
+      <a href="#" class="group block flex-shrink-0">
+        <div class="flex items-center">
+          <div class="ml-3">
+            <p class="text-base leading-6 font-medium text-white">
+              {{ post.author }}
+              <span class="text -sm leading-5 font-medium text-gray-400 group-hover:text-gray-300 transition ease-in-out duration-150">
+                @{{ post.author }} {{ post.date_posted }}
+              </span>
+            </p>
+          </div>
         </div>
-      </div>
-    </a>
-    <p class="flex items-center justify-center hover:text-pink-600">
-      {{ post.content }}
-    </p>
-    <div class="flex flex-shrink-0 p-4 pb-0 items-center justify-center"></div>
-  </div>
-
+      </a>
+      <p class="flex items-center justify-center hover:text-pink-600">
+        {{ post.content }}
+      </p>
+      <div class="absolute bottom-4 right-4">
+        <button type="button" class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-600 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700">
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20" height="18" viewBox="0 0 1280.000000 1086.000000" preserveAspectRatio="xMidYMid meet">
+            <metadata>
+              Created by potrace 1.15, written by Peter Selinger 2001-2017
+            </metadata>
+            <g transform="translate(0.000000,1086.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+<path d="M2040 10854 c-14 -2 -52 -9 -85 -15 -218 -37 -453 -164 -652 -353
+-184 -174 -298 -314 -637 -784 -172 -238 -274 -366 -406 -507 -260 -277 -318
+-419 -199 -481 51 -26 185 -19 511 25 365 50 571 65 748 57 483 -24 730 -135
+730 -330 0 -59 -24 -107 -86 -169 -56 -57 -90 -81 -266 -188 -380 -232 -799
+-616 -982 -901 -297 -465 -385 -1156 -226 -1772 73 -281 207 -547 434 -860
+196 -270 333 -414 711 -746 115 -102 291 -264 390 -360 197 -190 311 -282 503
+-402 470 -294 1364 -631 2117 -798 400 -89 419 -91 800 -100 424 -10 479 -21
+512 -98 48 -114 -36 -430 -202 -767 -118 -239 -185 -305 -306 -305 -30 0 -72
+5 -94 10 -120 29 -167 30 -361 5 -328 -43 -431 -32 -687 69 -272 108 -279 110
+-398 110 -105 1 -108 0 -185 -39 -85 -43 -124 -86 -124 -137 0 -26 7 -32 58
+-55 31 -14 60 -30 64 -36 11 -18 9 -80 -3 -118 -30 -89 -112 -161 -302 -266
+-229 -126 -293 -179 -285 -234 6 -43 121 -99 388 -189 291 -98 232 -92 850
+-90 375 1 588 -3 680 -12 74 -7 185 -13 245 -13 94 0 122 4 190 27 110 37 150
+45 300 58 283 24 310 36 326 160 15 108 35 119 139 75 33 -14 72 -25 87 -25
+38 0 110 37 132 68 48 69 33 148 -70 365 -107 227 -113 267 -68 436 25 95 66
+194 183 438 54 116 113 257 139 340 60 184 68 201 110 243 43 42 121 82 312
+160 184 75 346 157 700 353 160 88 398 214 529 280 132 65 320 166 417 223
+259 152 372 203 609 275 226 68 363 120 443 169 28 18 153 105 277 193 291
+208 412 287 535 346 131 64 203 85 425 121 222 36 299 57 422 110 339 149 495
+198 833 260 518 96 627 150 462 229 -107 51 -297 92 -682 146 -357 51 -767
+132 -812 161 -13 8 -39 47 -59 87 -20 39 -43 80 -52 90 -14 16 -12 17 31 17
+25 0 126 -7 224 -16 194 -17 266 -15 290 8 13 14 11 19 -19 47 -56 53 -142 88
+-303 121 -442 92 -514 112 -572 156 -39 29 -41 42 -12 78 26 34 95 68 279 141
+359 142 563 266 585 356 9 38 -26 83 -87 112 -170 81 -478 86 -982 17 -292
+-40 -472 -50 -899 -50 -484 0 -492 2 -862 178 -271 129 -1185 462 -1610 587
+-372 109 -693 175 -995 204 -324 32 -1316 66 -2190 76 -283 4 -532 11 -552 16
+-20 5 -46 21 -57 36 -38 47 -26 104 67 308 76 168 224 605 267 790 99 425 92
+822 -21 1146 -86 248 -229 465 -436 665 -306 294 -682 460 -1063 469 -77 2
+-151 2 -165 -1z"/>
+</g>
+</svg>            
+            <span class="sr-only">QUACK</span>
+        </button>
+    </div>
+    </div>
   {% endfor %}
 </div>
+
+  <div class="left-0 w-full flex justify-center">
+    <div class="flex">
+      <!-- Previous Button -->
+      <a href="#" class="flex items-center justify-center px-4 h-10 me-3 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+        <svg class="w-3.5 h-3.5 me-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5H1m0 0 4 4M1 5l4-4"/>
+        </svg>
+        Previous
+      </a>
+      <a href="#" class="flex items-center justify-center px-4 h-10 text-base font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
+        Next
+        <svg class="w-3.5 h-3.5 ms-2 rtl:rotate-180" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 10">
+          <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M1 5h12m0 0L9 1m4 4L9 9"/>
+        </svg>
+      </a>
+    </div>
+  </div>
+  <div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5 bg-gray-800">
+  <div class="px-10 py-10 border-transparent"></div>
+  </div>
 <form method="post" action="/quack" class="fixed bottom-6 bg-gray-900 left-0 right-0 p-2 opacity-0 hover:opacity-100 transition-opacity duration-300" id="hover-form">
   <textarea name="quack_content" class="w-full p-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-blue-500" placeholder="What's on your mind?"></textarea>
   <button class="mt-2 px-4 py-0 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600" type="submit">
