@@ -16,7 +16,7 @@ class F:
 
     def __init__(self):
         self.users = DB("Users")
-        self.quacks = DB("MockTweets")
+        self.quacks = DB("Quacks")
 
     def add_quack(self, user_id, body):
         """Funkce pro pridani quacku ktera bere jako argument ID uzivatele a obsahu quacku,
@@ -38,7 +38,8 @@ class F:
             "userID": user_id,
             "userName": current_user["userName"],
             "tweetContent": body,
-            "dateTweeted": datetime.now().strftime("%H:%M:%d:%m:%Y"),
+            "dateTweeted": datetime.now(),
+            "likes": 0,
         }
         self.quacks.insert_one(quack)
 
@@ -170,7 +171,7 @@ class F:
         """Funkce vraci "nejcerstvejsich" 20 quacku.
         $return: kolekce 20 quacku, ktere jsou nejnovejsi
         """
-        last20 = self.quacks.find().sort("date_quacked", -1).limit(20)
+        last20 = self.quacks.find().sort("dateTweeted", -1).limit(20)
         return last20
 
     def my_recent_twenty_quacks(self, user_id):
@@ -178,6 +179,8 @@ class F:
         @user_id: ID uzivatele, jehoz quacks chceme zobrazit
         $return: kolekce 20 quacku, ktere jsou nejnovejsi u konkretniho uzivatele
         """
-        filter = {"user_id": user_id}
-        last20 = self.quacks.find(filter).sort("date_quacked", -1).limit(20)
+        filter = {"userID": user_id}
+        last20 = self.quacks.find(filter).sort("dateTweeted", -1).limit(20)
         return last20
+
+
