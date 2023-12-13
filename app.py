@@ -45,7 +45,7 @@ def about():
         return render_template('about.html', title='About')
     else:
         account_name = {}
-        account_name=db.who_am_i(session['user_id'])
+        account_name = db.who_am_i(session['user_id'])
         user = account_name['username']
         return render_template('about.html',title='About', account_name=user)
     
@@ -68,7 +68,7 @@ def profile():
         if user_id is None:
             return redirect('/login')
         account_name = {}
-        account_name=db.who_am_i(session['user_id'])
+        account_name = db.who_am_i(session['user_id'])
         user = account_name['username']
         quacks = db.my_recent_twenty_quacks(int(user_id))
         posts = load_20_quacks(quacks)
