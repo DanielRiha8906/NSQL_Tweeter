@@ -3,6 +3,7 @@ from BackEnd.classes.userdocker import DB
 from redis import Redis
 from pymongo import MongoClient
 from datetime import datetime
+from flask_debug import Debug
 
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
@@ -11,6 +12,9 @@ app.secret_key = 'quack'
 client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
 dbname = client["nsql_sem"]
 db = DB(dbname["users"], dbname["quacks"])
+Debug(app)
+
+
 
 
 def get_user():
@@ -141,6 +145,8 @@ def load_20_quacks(quacks):
             'likes': quack['likes'],
         } for quack in quacks]
 
+
+redis.set("quacks", load_20_quacks(db.global_recent_twenty_quacks()))
 
 if __name__ == '__main__':
     app.run(host= "0.0.0.0", port=5000, debug=True)
