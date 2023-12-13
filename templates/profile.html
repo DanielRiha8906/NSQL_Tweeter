@@ -1,8 +1,8 @@
 {% extends 'layout.html' %}
 {% block content%}
-<div class="flex justify-center flex-col w-[40rem] mx-auto gap-5">
+<div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5">
     {% for post in posts %}
-    <div class="px-10 py-10 border border-gray-200">
+    <div class="px-10 py-10 border rounded-lg border-gray-200">
       <a href="#" class="group block flex-shrink-0">
         <div class="flex items-center">
           <div class="ml-3">
@@ -15,9 +15,6 @@
           </div>
         </div>
       </a>
-      <h1 class="text-pink-400 flex items-center justify-center">
-        {{ post.title }}
-      </h1>
       <p class="flex items-center justify-center hover:text-pink-600">
         {{ post.content }}
       </p>
@@ -26,12 +23,11 @@
   
     {% endfor %}
   </div>
-  <form method="post" action="/quack" class="fixed bottom-10 right-0 bg-gray-900 p-4">
-    <textarea name="quack_content" class="w-full p-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-blue-500" placeholder="What's on your mind?">
-    </textarea>
-    <button class="mt-2 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600" type="submit">
+  <form method="post" action="/quack" class="fixed bottom-6 bg-gray-900 left-0 right-0 p-2 opacity-0 hover:opacity-100 transition-opacity duration-300" id="hover-form">
+    <textarea name="quack_content" class="w-full p-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-blue-500" placeholder="What's on your mind?"></textarea>
+    <button class="mt-2 px-4 py-0 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600" type="submit">
         Post
     </button>
-</form>
+  </form>
 
 {% endblock content%}

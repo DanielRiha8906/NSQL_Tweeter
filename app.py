@@ -77,7 +77,7 @@ def profile():
     user = account_name['userName']
     quacks = db.my_recent_twenty_quacks(int(user_id))
     posts = load_20_quacks(quacks)
-    return render_template('profile.html', posts=posts, account_name=user, title=user)
+    return render_template('profile.html', posts=posts, account_name=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
