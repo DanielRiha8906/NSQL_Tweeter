@@ -16,8 +16,6 @@ db = DB(dbname["users"], dbname["quacks"])
 Debug(app)
 
 
-
-
 def get_user():
     if 'user_id' in session:
         return db.who_am_i(session['user_id'])
@@ -40,6 +38,7 @@ def home():
     if request.method == "POST":
         return post_quack('home')  
 
+
 @app.route("/TOS")
 def tos():
     return render_template('terms_of_service.html')
@@ -55,7 +54,6 @@ def about():
         user = account_name['username']
         return render_template('about.html',title='About', account_name=user)
     
-
 
 def post_quack(to_page):
     """Metoda pro postovani novych quacku na FrontEndu provazanim s metodou z BackEndu.
