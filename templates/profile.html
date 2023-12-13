@@ -24,7 +24,7 @@
             <metadata>
               Created by potrace 1.15, written by Peter Selinger 2001-2017
             </metadata>
-            <g transform="translate(0.000000,1086.000000) scale(0.100000,-0.100000)" fill="#000000" stroke="none">
+            <g transform="translate(0.000000,1086.000000) scale(0.100000,-0.100000)" fill="#FFFFFF" stroke="none">
 <path d="M2040 10854 c-14 -2 -52 -9 -85 -15 -218 -37 -453 -164 -652 -353
 -184 -174 -298 -314 -637 -784 -172 -238 -274 -366 -406 -507 -260 -277 -318
 -419 -199 -481 51 -26 185 -19 511 25 365 50 571 65 748 57 483 -24 730 -135
@@ -101,11 +101,11 @@
   <div class="px-10 py-10 border-transparent"></div>
   </div>
   <!--- Post Button --->
-<form method="post" action="/quack" class="fixed bottom-6 bg-gray-900 left-0 right-0 p-2 opacity-0 hover:opacity-100 transition-opacity duration-300" id="hover-form">
-  <textarea name="quack_content" class="w-full p-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-blue-500" placeholder="What's on your mind?"></textarea>
-  <button onclick="next_page('profile')" class="mt-2 px-4 py-0 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600" type="submit">
-      Post
-  </button>
-</form>
+  <form method="post" action="/quack" class="fixed bottom-6 bg-gray-900 left-0 right-0 p-2 opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col items-end" id="hover-form">
+    <textarea name="quack_content" class="w-full p-2 bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-blue-500" placeholder="What's on your mind?"></textarea>
+    <button class="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600" type="submit">
+        Post
+    </button>
+  </form>
 
 {% endblock content %}
