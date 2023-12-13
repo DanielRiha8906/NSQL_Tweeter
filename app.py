@@ -16,6 +16,7 @@ db = DB(dbname["users"], dbname["quacks"])
 Debug(app)
 
 
+
 def get_user():
     if 'user_id' in session:
         return db.who_am_i(session['user_id'])
@@ -26,13 +27,14 @@ def get_user():
 @app.route("/home", methods=["GET", "POST"]) 
 def home():
     if request.method == "GET":
-        quacks = db.global_recent_twenty_quacks()
-        posts = load_20_quacks(quacks)
-        if get_user() is None:
+        posts = cached()
+        if posts is None:
+            quacks = db.global_recent_twenty_quacks()
+            posts = load_20_quacks(quacks)
+        account_name = get_user()
+        if account_name is None:
             return render_template('home.html', posts=posts)
         else:
-            account_name = {}
-            account_name=db.who_am_i(session['user_id'])
             user = account_name['username']
             return render_template('home.html', posts=posts, account_name=user)
     if request.method == "POST":
@@ -74,6 +76,7 @@ def post_quack(to_page):
             flash("Your quack is too long!", "danger")
             return redirect(f"/{to_page}")
         else:
+            cache_it()
             flash("Your quack has been successfully posted!", "success")
             return redirect(f"/{to_page}")
 
@@ -88,6 +91,7 @@ def like():
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
     if request.method == "POST":
+        cache_it()
         return post_quack('profile')
     if request.method == "GET":
         user_id = session['user_id']
@@ -151,7 +155,11 @@ def load_20_quacks(quacks):
         } for quack in quacks]
 
 
-redis.set("quacks", json.dumps(load_20_quacks(db.global_recent_twenty_quacks())))
+def cache_it():
+    redis.set("quacks", json.dumps(load_20_quacks(db.global_recent_twenty_quacks())))
+
+def cached():
+    return json.loads(redis.get("quacks"))
 
 if __name__ == '__main__':
     app.run(host= "0.0.0.0", port=5000, debug=True)
