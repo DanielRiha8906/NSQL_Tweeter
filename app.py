@@ -4,6 +4,7 @@ from redis import Redis
 from pymongo import MongoClient
 from datetime import datetime
 from flask_debug import Debug
+import json
 
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
@@ -23,18 +24,21 @@ def get_user():
     return None
 
 
-@app.route("/") 
+@app.route("/", methods=["GET", "POST"])
+@app.route("/home", methods=["GET", "POST"]) 
 def home():
-    quacks = db.global_recent_twenty_quacks()
-    posts = load_20_quacks(quacks)
-    if get_user() is None:
-        return render_template('home.html', posts=posts)
-    else:
-        account_name = {}
-        account_name=db.who_am_i(session['user_id'])
-        user = account_name['username']
-        return render_template('home.html', posts=posts, account_name=user)
-        
+    if request.method == "GET":
+        quacks = db.global_recent_twenty_quacks()
+        posts = load_20_quacks(quacks)
+        if get_user() is None:
+            return render_template('home.html', posts=posts)
+        else:
+            account_name = {}
+            account_name=db.who_am_i(session['user_id'])
+            user = account_name['username']
+            return render_template('home.html', posts=posts, account_name=user)
+    if request.method == "POST":
+        return post_quack('home')  
 
 @app.route("/TOS")
 def tos():
@@ -52,8 +56,8 @@ def about():
         return render_template('about.html',title='About', account_name=user)
     
 
-@app.route("/quack", methods=["GET", "POST"])
-def post_quack():
+
+def post_quack(to_page):
     """Metoda pro postovani novych quacku na FrontEndu provazanim s metodou z BackEndu.
     Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. A kontrola jestli neprekrocil maximalni delku quacku(255), tento check je aktualne 'duplicitni'.
     """
@@ -61,19 +65,19 @@ def post_quack():
     if user_id is None:
         flash("You cannot post a quack, if you are not logged in!")
         return redirect("/login")
-    elif user_id is not None and request.method == "POST":
+    else:
         content = str(request.form["quack_content"])
         posted = db.add_quack(user_id, content)
 
         if posted == 2:
             flash("Your cannot post an empty quack!", "danger")
-            return redirect("/profile")
+            return redirect(f"/{to_page}")
         elif posted == 1:
             flash("Your quack is too long!", "danger")
-            return redirect("/profile")
+            return redirect(f"/{to_page}")
         else:
             flash("Your quack has been successfully posted!", "success")
-            return redirect("/profile")
+            return redirect(f"/{to_page}")
 
 
 @app.route("/like", methods=["POST"])
@@ -83,17 +87,20 @@ def like():
     upvote = db.upvote_quack(user_id, quack_id)
 
 
-@app.route("/profile")
+@app.route("/profile", methods=["GET", "POST"])
 def profile():
-    user_id = session['user_id']
-    if user_id is None:
-        return redirect('/login')
-    account_name = {}
-    account_name=db.who_am_i(session['user_id'])
-    user = account_name['username']
-    quacks = db.my_recent_twenty_quacks(int(user_id))
-    posts = load_20_quacks(quacks)
-    return render_template('profile.html', posts=posts, account_name=user, title=user)
+    if request.method == "POST":
+        return post_quack('profile')
+    if request.method == "GET":
+        user_id = session['user_id']
+        if user_id is None:
+            return redirect('/login')
+        account_name = {}
+        account_name=db.who_am_i(session['user_id'])
+        user = account_name['username']
+        quacks = db.my_recent_twenty_quacks(int(user_id))
+        posts = load_20_quacks(quacks)
+        return render_template('profile.html', posts=posts, account_name=user, title=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -146,7 +153,7 @@ def load_20_quacks(quacks):
         } for quack in quacks]
 
 
-redis.set("quacks", load_20_quacks(db.global_recent_twenty_quacks()))
+redis.set("quacks", json.dumps(load_20_quacks(db.global_recent_twenty_quacks())))
 
 if __name__ == '__main__':
     app.run(host= "0.0.0.0", port=5000, debug=True)
