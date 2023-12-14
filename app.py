@@ -61,6 +61,7 @@ def delete_quack(quack_id):
         return redirect("/login")
     elif user_id is not None:
         db.del_quack(quack_id, user_id)
+        flash('Your quack has been deleted!', 'success')
         return redirect("/profile")
 
 @app.route("/quack", methods=["GET", "POST"])
