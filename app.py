@@ -18,7 +18,12 @@ def get_user():
     return None
 @app.route("/") 
 def home():
-    quacks = db.global_recent_twenty_quacks(int(session['home_pages_coefficient']))
+    try:
+        page = int(session['home_pages_coefficient'])
+    except:
+        session['home_pages_coefficient'] = 0
+        page = 0
+    quacks = db.global_recent_twenty_quacks(page)
     posts = load_20_quacks(quacks)
     if get_user() is None:
         return render_template('home.html', posts=posts)
