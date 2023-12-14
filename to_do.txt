@@ -1,0 +1,5 @@
+- likes
+
+- strankovni nemuze jit dal nez pocet postu
+
+- uprava postu
