@@ -20,7 +20,7 @@ def get_user():
 def home():
     try:
         page = int(session['home_pages_coefficient'])
-    except:
+    except KeyError:
         session['home_pages_coefficient'] = 0
         page = 0
     quacks = db.global_recent_twenty_quacks(page)
