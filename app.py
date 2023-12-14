@@ -18,7 +18,7 @@ def get_user():
     return None
 @app.route("/") 
 def home():
-    quacks = db.global_recent_twenty_quacks()
+    quacks = db.global_recent_twenty_quacks(int(session['home_pages_coefficient']))
     posts = load_20_quacks(quacks)
     if get_user() is None:
         return render_template('home.html', posts=posts)
@@ -27,7 +27,7 @@ def home():
         account_name=db.who_am_i(session['user_id'])
         user = account_name['userName']
         return render_template('home.html', posts=posts, account_name=user)
-        
+
 
 @app.route("/TOS")
 def tos():
@@ -66,6 +66,23 @@ def post_quack():
             db.add_quack(user_id, content)
             return redirect("/profile")
 
+def next_page(page):
+    print('next page')
+    if page == 'home':
+        session['home_pages_coefficient'] += 1
+        redirect('/home')
+    elif page == 'profile':
+        session['profile_pages_coefficient'] += 1
+        redirect('/profile')
+
+def previous_page(page):
+    print('previous page')
+    if page == 'home':
+        session['home_pages_coefficient'] -= 1
+        redirect('/home')
+    elif page == 'profile':
+        session['profile_pages_coefficient'] -= 1
+        redirect('/profile')
 
 @app.route("/profile")
 def profile():
@@ -75,13 +92,15 @@ def profile():
     account_name = {}
     account_name=db.who_am_i(session['user_id'])
     user = account_name['userName']
-    quacks = db.my_recent_twenty_quacks(int(user_id))
+    quacks = db.my_recent_twenty_quacks(int(user_id), session['profile_pages_coefficient'])
     posts = load_20_quacks(quacks)
     return render_template('profile.html', posts=posts, account_name=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    session['home_pages_coefficient'] = 0
+    session['profile_pages_coefficient'] = 0
     if request.method == "POST":
         user = str(request.form['username'])
         passw = str(request.form['password'])
@@ -116,6 +135,8 @@ def register():
 
 @app.route("/logout")
 def logout():
+    session['home_pages_coefficient'] = None
+    session['profile_pages_coefficient'] = None
     session['user_id'] = None
     return redirect('/login')
 
