@@ -12,18 +12,19 @@ app.secret_key = 'quack'
 #dbname = client["nsql_sem"]
 #db = DB(dbname["Users"], dbname["Quacks"]) # pouziti docker mongo
 db = F() # pouziti mongo pres railway
+
 def get_user():
     if 'user_id' in session:
         return db.who_am_i(session['user_id'])
     return None
 @app.route("/") 
 def home():
-    try:
-        page = int(session['home_pages_coefficient'])
-    except KeyError:
-        session['home_pages_coefficient'] = 0
-        page = 0
-    quacks = db.global_recent_twenty_quacks(page)
+    # try:
+    #     page = int(session['home_pages_coefficient'])
+    # except KeyError:
+    #     session['home_pages_coefficient'] = 0
+    #     page = 0
+    quacks = db.global_recent_twenty_quacks(session['home_pages_coefficient'])
     posts = load_20_quacks(quacks)
     if get_user() is None:
         return render_template('home.html', posts=posts)
@@ -71,23 +72,28 @@ def post_quack():
             db.add_quack(user_id, content)
             return redirect("/profile")
 
+@app.route('/<page>/next', methods=["GET"])
 def next_page(page):
     print('next page')
     if page == 'home':
         session['home_pages_coefficient'] += 1
-        redirect('/home')
+        return redirect('/')
     elif page == 'profile':
         session['profile_pages_coefficient'] += 1
-        redirect('/profile')
+        return redirect('/profile')
 
+@app.route('/<page>/previous', methods=["GET"])
 def previous_page(page):
-    print('previous page')
     if page == 'home':
+        if session['home_pages_coefficient'] == 0:
+            return redirect('/')
         session['home_pages_coefficient'] -= 1
-        redirect('/home')
+        return redirect('/')
     elif page == 'profile':
+        if session['profile_pages_coefficient'] == 0:
+            return redirect('/profile')
         session['profile_pages_coefficient'] -= 1
-        redirect('/profile')
+        return redirect('/profile')
 
 @app.route("/profile")
 def profile():
@@ -152,7 +158,7 @@ def load_20_quacks(quacks):
             'title': "title",
             'content': quack['tweetContent'],
             'date_posted': quack['dateTweeted'],
-            'likes': quack['likes'],
+            'likes': quack['likes']
         } for quack in quacks]
 
 
