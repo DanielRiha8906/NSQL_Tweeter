@@ -50,6 +50,19 @@ def about():
         return render_template('about.html',title='About', account_name=user)
     
 
+@app.route("/delete/<int:quack_id>", methods=["GET","POST"])
+def delete_quack(quack_id):
+    """Metoda pro vymazani quacku na FrontEndu provazanim s metodou z BackEndu. Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. 
+    """
+    print('deleted succsessfully')
+    user_id = session['user_id']
+    if user_id is None:
+        flash('You cannot delete a quack, if you are not logged in!', 'danger')
+        return redirect("/login")
+    elif user_id is not None:
+        db.del_quack(quack_id, user_id)
+        return redirect("/profile")
+
 @app.route("/quack", methods=["GET", "POST"])
 def post_quack():
     """Metoda pro postovani novych quacku na FrontEndu provazanim s metodou z BackEndu.
@@ -154,6 +167,7 @@ def logout():
 
 def load_20_quacks(quacks):
     return [ {
+            'id': quack['_id'],
             'author': quack['userName'],
             'title': "title",
             'content': quack['tweetContent'],

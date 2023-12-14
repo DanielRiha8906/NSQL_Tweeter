@@ -49,11 +49,13 @@ class F:
         @user_id: ID (aktualniho) uzivatele, ktery chce prispevek vymazat, pro overeni zda je puvodnim autorem
         """
         current_quack = self.quacks.find_one({"_id": quack_id})
-        user = current_quack.get("user_id")
+        owner = current_quack["userID"]
         if current_quack is None:
             print("You cannot delete a quack that does not exist!")
             return None
-        if user != user_id:
+        if owner != user_id:
+            print(owner)
+            print(user_id)
             print("You cannot delete a quack that is not yours!")
             return None
 
