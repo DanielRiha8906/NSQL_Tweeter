@@ -22,10 +22,10 @@ class DB:
         if len(body) == 0:
             return 2 # empty
         latest_quack = self.quacks.find().sort({"_id": -1}).limit(1)
-        if latest_quack is None:
-            latest_id = 0
-        else:
+        try:
             latest_id = latest_quack[0].get("_id")
+        except IndexError:
+            latest_id = 0
         quack = {
             "_id": latest_id + 1,
             "user_id": user_id,
@@ -36,6 +36,7 @@ class DB:
         }
         self.quacks.insert_one(quack)
         return 0
+
 
     def del_quack(self, quack_id, user_id):
         """Funkce posila pozadavek na vymazani quacku podle ID.
@@ -138,6 +139,7 @@ class DB:
         )
         return True
 
+
     def register_user(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
         @username: uzivatelske jmeno, ktere klient zadal na vstupu
@@ -175,21 +177,23 @@ class DB:
         return user
 
 
-    def global_recent_twenty_quacks(self):
+    def global_recent_twenty_quacks(self, range):
         """Funkce vraci "nejcerstvejsich" 20 quacku.
         $return: kolekce 20 quacku, ktere jsou nejnovejsi
         """
-        last20 = (self.quacks.find().sort("date_quacked", -1).limit(20))
-        return last20
+        offset = range * 20
+        limit = 20
+        paginated_quacks = self.quacks.find().skip(offset).limit(limit)
+        return paginated_quacks
 
 
-    def my_recent_twenty_quacks(self, user_id):
+    def my_recent_twenty_quacks(self, user_id, range):
         """Funkce vraci "nejcerstvejsich" 20 quacku pridanych konkretnim uzivatelem.
         @user_id: ID uzivatele, jehoz quacks chceme zobrazit
         $return: kolekce 20 quacku, ktere jsou nejnovejsi u konkretniho uzivatele
         """
         filter = {"user_id": user_id}
-        last20 = self.quacks.find(filter).sort("date_quacked", -1).limit(20)
-        return last20
-
-
+        offset = range * 20
+        limit = 20
+        paginated_quacks = self.quacks.find(filter).skip(offset).limit(limit)
+        return paginated_quacks

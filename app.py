@@ -20,10 +20,19 @@ Debug(app)
 @app.route("/home", methods=["GET", "POST"]) 
 def home():
     if request.method == "GET":
-        posts = cached()
-        if posts is None:
-            quacks = db.global_recent_twenty_quacks()
-            posts = load_20_quacks(quacks)
+        try:
+            page = int(session['home_page_coefficient'])
+        except KeyError:
+            session['home_page_coefficient'] = 0
+            page = 0
+        
+        if page == 0:
+            posts = cached()
+            if posts is None:
+                cache_it()
+                posts = load_20_quacks(db.global_recent_twenty_quacks(0))
+        else:
+            posts = load_20_quacks(db.global_recent_twenty_quacks(page))
         account_name = get_user()
         if account_name is None:
             return render_template('home.html', posts=posts)
@@ -67,16 +76,16 @@ def profile():
         user_id = session['user_id']
         if user_id is None:
             return redirect('/login')
-        account_name = {}
+        
         account_name = db.who_am_i(session['user_id'])
         user = account_name['username']
-        quacks = db.my_recent_twenty_quacks(int(user_id))
-        posts = load_20_quacks(quacks)
+        posts = load_20_quacks(db.my_recent_twenty_quacks(int(user_id), session['profile_pages_coefficient']))
         return render_template('profile.html', posts=posts, account_name=user, title=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
+    session['profile_pages_coefficient'] = 0
     if request.method == "POST":
         user = str(request.form['username'])
         passw = str(request.form['password'])
@@ -111,6 +120,8 @@ def register():
 
 @app.route("/logout")
 def logout():
+    session['home_page_coefficient'] = 0
+    session['profile_page_coefficient'] = 0
     session['user_id'] = None
     return redirect('/login')
 
@@ -123,17 +134,23 @@ def load_20_quacks(quacks):
             'content': quack['quack_content'],
             'date_posted': datetime.strptime(quack['date_quacked'], "%Y-%m-%dT%H:%M:%S.%f").strftime("%H:%M - %d/%m/%Y"),
             'likes': quack['likes'],
-        } for quack in quacks]
+        } for quack in quacks][::-1]
 
 
 def cache_it():
-    """Metoda pro cacheovani vsech 20 nejnovensich quacku."""
-    redis.set("quacks", json.dumps(load_20_quacks(db.global_recent_twenty_quacks())))
+    """Metoda pro cacheovani vsech 20 nejnovensich quacku.""" 
+    try:
+        redis.set("quacks", json.dumps(load_20_quacks(db.global_recent_twenty_quacks(0))))
+    except TypeError:
+        pass
 
 
 def cached():
     """Metoda pro ziskani vsech 20 nejnovensich quacku z cache."""
-    return json.loads(redis.get("quacks"))
+    try:
+        return json.loads(redis.get("quacks"))
+    except TypeError:
+        return None
 
 
 def post_quack(to_page):
@@ -166,6 +183,26 @@ def get_user():
     if 'user_id' in session:
         return db.who_am_i(session['user_id'])
     return None
+
+
+def next_page(page):
+    print('next page')
+    if page == 'home':
+        session['home_pages_coefficient'] += 1
+        redirect('/home')
+    elif page == 'profile':
+        session['profile_pages_coefficient'] += 1
+        redirect('/profile')
+
+
+def previous_page(page):
+    print('previous page')
+    if page == 'home':
+        session['home_pages_coefficient'] -= 1
+        redirect('/home')
+    elif page == 'profile':
+        session['profile_pages_coefficient'] -= 1
+        redirect('/profile')
 
 
 if __name__ == '__main__':
