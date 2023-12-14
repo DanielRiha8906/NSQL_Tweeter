@@ -152,6 +152,7 @@ def load_20_quacks(quacks):
             'title': "title",
             'content': quack['tweetContent'],
             'date_posted': quack['dateTweeted'],
+            'likes': quack['likes'],
         } for quack in quacks]
 
 
