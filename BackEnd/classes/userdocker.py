@@ -197,10 +197,3 @@ class DB:
         limit = 20
         paginated_quacks = self.quacks.find(filter).sort("date_quacked", -1).skip(offset).limit(limit)
         return paginated_quacks
-    
-
-    def count_quacks(self):
-        """Funkce vraci celkovy pocet quacku v databazi.
-        $return: celkovy pocet quacku
-        """
-        return self.quacks.find({}).count()
