@@ -9,11 +9,7 @@ import json
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 app.secret_key = 'quack'
-
-client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
-dbname = client["nsql_sem"]
-db = DB(dbname["users"], dbname["quacks"])
-Debug(app)
+db = DB()
 
 
 @app.route("/", methods=["GET", "POST"])
