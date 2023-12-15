@@ -1,17 +1,14 @@
 import pymongo
 from datetime import datetime
-from BackEnd.classes.database_loader import connect_to_db
+
 
 
 class DB:
 
-    users: connect_to_db
-    quacks: connect_to_db
-
-    def __init__(self):
+    def __init__(self, users, quacks):
         # Ustanoveni connection k jednotlivym kolekcim
-        self.users = connect_to_db("users")
-        self.quacks = connect_to_db("quacks")
+        self.users = users
+        self.quacks = quacks
 
 
     def add_quack(self, user_id, body):

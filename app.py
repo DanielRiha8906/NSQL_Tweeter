@@ -9,7 +9,10 @@ import json
 app = Flask(__name__)
 redis = Redis(host='redis', port=6379)
 app.secret_key = 'quack'
-db = DB()
+
+client = MongoClient("mongodb://admin:admin@mongodb:27017", connect=False)
+dbname = client["nsql_sem"]
+db = DB(dbname["users"], dbname["quacks"])
 
 
 @app.route("/", methods=["GET", "POST"])
@@ -132,8 +135,8 @@ def register():
 def next_page(page):
     if page == 'home':
         session['home_pages_coefficient'] += 1
-        if not can_i_go_next(session['home_pages_coefficient']):
-            session['home_pages_coefficient'] -= 1
+        #if not can_i_go_next(session['home_pages_coefficient']):
+            #session['home_pages_coefficient'] -= 1
         return redirect('/')
     elif page == 'profile':
         session['profile_pages_coefficient'] += 1
@@ -226,8 +229,9 @@ def get_user():
 
 def can_i_go_next(page_number):
     """Metoda pro ziskani jestli je mozne pokracovat na dalsi stranku."""
-    max_page = (db.quacks.count_documents({}) // 20) + (0 if (db.quacks.count_documents({}) % 20) == 0 else 1)
-    if page_number < max_page:
+    count = dbname['quacks'].count_documents({})
+    max_page = int((count // 20) + (0 if (count % 20) == 0 else 1))
+    if page_number <= max_page:
         return True
     return False
 
