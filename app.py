@@ -20,9 +20,9 @@ db = DB(dbname["users"], dbname["quacks"])
 def home():
     if request.method == "GET":
         try:
-            page = int(session['home_page_coefficient'])
+            page = session['home_pages_coefficient']
         except KeyError:
-            session['home_page_coefficient'] = 0
+            session['home_pages_coefficient'] = 0
             page = 0
         
         if page == 0:
@@ -30,8 +30,8 @@ def home():
             if posts is None:
                 cache_it()
                 posts = load_20_quacks(db.global_recent_twenty_quacks(0))
-        else:
-            posts = load_20_quacks(db.global_recent_twenty_quacks(page))
+        if page > 0:
+            posts = load_20_quacks(db.global_recent_twenty_quacks(session['home_pages_coefficient']))
         account_name = get_user()
         if account_name is None:
             return render_template('home.html', posts=posts)
@@ -135,9 +135,9 @@ def register():
 def next_page(page):
     if page == 'home':
         session['home_pages_coefficient'] += 1
-        #if not can_i_go_next(session['home_pages_coefficient']):
-            #session['home_pages_coefficient'] -= 1
-        return redirect('/')
+        if not can_i_go_next(session['home_pages_coefficient']):
+            session['home_pages_coefficient'] -= 1
+        return redirect('/home')
     elif page == 'profile':
         session['profile_pages_coefficient'] += 1
         if not can_i_go_next(session['profile_pages_coefficient']):
@@ -231,7 +231,7 @@ def can_i_go_next(page_number):
     """Metoda pro ziskani jestli je mozne pokracovat na dalsi stranku."""
     count = dbname['quacks'].count_documents({})
     max_page = int((count // 20) + (0 if (count % 20) == 0 else 1))
-    if page_number <= max_page:
+    if page_number < max_page:
         return True
     return False
 
