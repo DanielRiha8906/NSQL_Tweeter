@@ -44,12 +44,10 @@ class DB:
         @user_id: ID (aktualniho) uzivatele, ktery chce prispevek vymazat, pro overeni zda je puvodnim autorem
         """
         current_quack = self.quacks.find_one({"_id": quack_id})
-        user = current_quack.get("user_id")
+        owner = current_quack["user_id"]
         if current_quack is None:
-            print("You cannot delete a quack that does not exist!")
             return None
-        if user != user_id:
-            print("You cannot delete a quack that is not yours!")
+        if owner != user_id:
             return None
 
         self.quacks.delete_one({"_id": quack_id})
@@ -159,6 +157,7 @@ class DB:
                 "_id": latest_id + 1,
                 "username": username,
                 "password": password,
+                "liked_quacks": []
             }
             self.users.insert_one(user)
             return True
@@ -197,3 +196,10 @@ class DB:
         limit = 20
         paginated_quacks = self.quacks.find(filter).skip(offset).limit(limit)
         return paginated_quacks
+    
+
+    def count_quacks(self):
+        """Funkce vraci celkovy pocet quacku v databazi.
+        $return: celkovy pocet quacku
+        """
+        return self.quacks.count_documents({})

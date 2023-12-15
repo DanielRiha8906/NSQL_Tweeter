@@ -59,11 +59,25 @@ def about():
         return render_template('about.html',title='About', account_name=user)
     
 
-@app.route("/like", methods=["POST"])
-def like():
+@app.route("/like/<int:quack_id>", methods=["GET", "POST"])
+def like(quack_id):
     user_id = session["user_id"]
-    quack_id = request.form["quack_id"]
     upvote = db.upvote_quack(user_id, quack_id)
+
+
+@app.route("/delete/<int:quack_id>", methods=["GET","POST"])
+def delete_quack(quack_id):
+    """Metoda pro vymazani quacku na FrontEndu provazanim s metodou z BackEndu. Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. 
+    """
+    user_id = session['user_id']
+    if user_id is None:
+        flash('You cannot delete a quack, if you are not logged in!', 'danger')
+        return redirect("/login")
+    elif user_id is not None:
+        db.del_quack(quack_id, user_id)
+        flash('Your quack has been deleted!', 'success')
+        cache_it()
+        return redirect("/profile")
 
 
 @app.route("/profile", methods=["GET", "POST"])
@@ -118,6 +132,34 @@ def register():
         return render_template('register.html')
 
 
+@app.route("/<page>/next", methods=["GET"])
+def next_page(page):
+    if page == 'home':
+        session['home_pages_coefficient'] += 1
+        if not can_i_go_next(session['home_pages_coefficient']):
+            session['home_pages_coefficient'] -= 1
+        return redirect('/')
+    elif page == 'profile':
+        session['profile_pages_coefficient'] += 1
+        if not can_i_go_next(session['profile_pages_coefficient']):
+            session['profile_pages_coefficient'] -= 1
+        return redirect('/profile')
+
+
+@app.route("/<page>/previous", methods=["GET"])
+def previous_page(page):
+    if page == 'home':
+        if session['home_pages_coefficient'] == 0:
+            return redirect('/')
+        session['home_pages_coefficient'] -= 1
+        return redirect('/')
+    elif page == 'profile':
+        if session['profile_pages_coefficient'] == 0:
+            return redirect('/profile')
+        session['profile_pages_coefficient'] -= 1
+        return redirect('/profile')
+    
+
 @app.route("/logout")
 def logout():
     session['home_page_coefficient'] = 0
@@ -129,6 +171,7 @@ def logout():
 def load_20_quacks(quacks):
     """Metoda pro ziskani 20 nejnovensich quacku."""
     return [ {
+            'id': quack['_id'],
             'author': quack['username'],
             'title': "title",
             'content': quack['quack_content'],
@@ -185,25 +228,12 @@ def get_user():
     return None
 
 
-def next_page(page):
-    print('next page')
-    if page == 'home':
-        session['home_pages_coefficient'] += 1
-        redirect('/home')
-    elif page == 'profile':
-        session['profile_pages_coefficient'] += 1
-        redirect('/profile')
-
-
-def previous_page(page):
-    print('previous page')
-    if page == 'home':
-        session['home_pages_coefficient'] -= 1
-        redirect('/home')
-    elif page == 'profile':
-        session['profile_pages_coefficient'] -= 1
-        redirect('/profile')
-
+def can_i_go_next(page_number):
+    """Metoda pro ziskani jestli je mozne pokracovat na dalsi stranku."""
+    max_page = db.count_quacks() // 20 + 0 if (db.count_quacks() % 20) == 0 else 1
+    if page_number < max_page:
+        return True
+    return False
 
 if __name__ == '__main__':
     app.run(host= "0.0.0.0", port=5000, debug=True)
