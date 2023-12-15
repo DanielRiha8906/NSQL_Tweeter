@@ -177,7 +177,7 @@ def load_20_quacks(quacks):
             'content': quack['quack_content'],
             'date_posted': datetime.strptime(quack['date_quacked'], "%Y-%m-%dT%H:%M:%S.%f").strftime("%H:%M - %d/%m/%Y"),
             'likes': quack['likes'],
-        } for quack in quacks][::-1]
+        } for quack in quacks]
 
 
 def cache_it():
@@ -212,12 +212,12 @@ def post_quack(to_page):
         if posted == 2:
             flash("Your cannot post an empty quack!", "danger")
             return redirect(f"/{to_page}")
-        elif posted == 1:
-            flash("Your quack is too long!", "danger")
-            return redirect(f"/{to_page}")
-        else:
+        elif posted == 0:
             cache_it()
             flash("Your quack has been successfully posted!", "success")
+            return redirect(f"/{to_page}")
+        else:
+            flash("Your quack is too long!", "danger")
             return redirect(f"/{to_page}")
         
 
@@ -230,7 +230,7 @@ def get_user():
 
 def can_i_go_next(page_number):
     """Metoda pro ziskani jestli je mozne pokracovat na dalsi stranku."""
-    max_page = db.count_quacks() // 20 + 0 if (db.count_quacks() % 20) == 0 else 1
+    max_page = (db.quacks.count_documents({}) // 20) + (0 if (db.quacks.count_documents({}) % 20) == 0 else 1)
     if page_number < max_page:
         return True
     return False

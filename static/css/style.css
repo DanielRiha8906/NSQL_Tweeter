@@ -1503,3 +1503,8 @@ video {
     --tw-ring-color: rgb(127 29 29 / var(--tw-ring-opacity));
   }
 }
+
+.break-long-words {
+  overflow-wrap: break-word;
+  word-break: break-all;
+}

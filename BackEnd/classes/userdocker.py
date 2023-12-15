@@ -182,7 +182,7 @@ class DB:
         """
         offset = range * 20
         limit = 20
-        paginated_quacks = self.quacks.find().skip(offset).limit(limit)
+        paginated_quacks = self.quacks.find().sort("date_quacked", -1).skip(offset).limit(limit)
         return paginated_quacks
 
 
@@ -194,7 +194,7 @@ class DB:
         filter = {"user_id": user_id}
         offset = range * 20
         limit = 20
-        paginated_quacks = self.quacks.find(filter).skip(offset).limit(limit)
+        paginated_quacks = self.quacks.find(filter).sort("date_quacked", -1).skip(offset).limit(limit)
         return paginated_quacks
     
 
@@ -202,4 +202,4 @@ class DB:
         """Funkce vraci celkovy pocet quacku v databazi.
         $return: celkovy pocet quacku
         """
-        return self.quacks.count_documents({})
+        return self.quacks.find({}).count()
