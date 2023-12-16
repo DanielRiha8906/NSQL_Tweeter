@@ -1,5 +1,9 @@
 {% extends 'layout.html' %} {% block content%}
 <div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5">
+  <div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5 bg-gray-800">
+    <div class="px-10 py-1 border-transparent">
+    </div>
+  </div>
   {% for post in posts %}
   <div class="px-10 py-10 border rounded-lg border-gray-200 relative">
     <a href="#" class="group block flex-shrink-0">
@@ -21,19 +25,20 @@
     <!--- Like Count --->
     <span
       class=" absolute bottom-7 right-12 px-7 text-white text-sm leading-5 font-medium hover:text-blue-600 flex justify-end">{{
-      post.likes }} ducks has liked this post</span>
+      post.likes }} ducks has liked this post
+    </span>
     <!---- Duck Button --->
     <div class="absolute bottom-4 right-4">
       <a href="/like/{{ post.id }}" method="post">
-      <button type="button"
+        <button type="button"
         class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-600 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700">
-        <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20" height="18"
-          viewBox="0 0 1280.000000 1086.000000" preserveAspectRatio="xMidYMid meet">
-          <metadata>
-            Created by potrace 1.15, written by Peter Selinger 2001-2017
-          </metadata>
-          <g transform="translate(0.000000,1086.000000) scale(0.100000,-0.100000)" fill="#FFFFFF" stroke="none">
-            <path d="M2040 10854 c-14 -2 -52 -9 -85 -15 -218 -37 -453 -164 -652 -353
+          <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20" height="18"
+            viewBox="0 0 1280.000000 1086.000000" preserveAspectRatio="xMidYMid meet">
+            <metadata>
+              Created by potrace 1.15, written by Peter Selinger 2001-2017
+            </metadata>
+            <g transform="translate(0.000000,1086.000000) scale(0.100000,-0.100000)" fill="#FFFFFF" stroke="none">
+              <path d="M2040 10854 c-14 -2 -52 -9 -85 -15 -218 -37 -453 -164 -652 -353
 -184 -174 -298 -314 -637 -784 -172 -238 -274 -366 -406 -507 -260 -277 -318
 -419 -199 -481 51 -26 185 -19 511 25 365 50 571 65 748 57 483 -24 730 -135
 730 -330 0 -59 -24 -107 -86 -169 -56 -57 -90 -81 -266 -188 -380 -232 -799
@@ -62,13 +67,13 @@
 -20 5 -46 21 -57 36 -38 47 -26 104 67 308 76 168 224 605 267 790 99 425 92
 822 -21 1146 -86 248 -229 465 -436 665 -306 294 -682 460 -1063 469 -77 2
 -151 2 -165 -1z" />
-          </g>
-        </svg>
+            </g>
+          </svg>
         <span class="sr-only">QUACK</span>
       </button>
-      </a>
-    </div>
-    </div>
+    </a>
+  </div>
+</div>
   {% endfor %}
 </div>
 <div class="left-0 w-full flex justify-center">
