@@ -8,6 +8,7 @@ venv/
 
 # BackEnd
 BackEnd/.env
+BackEnd/classes/.env
 BackEnd/__init__.py
 BackEnd/classes/__pycache__
 
