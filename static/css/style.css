@@ -1508,3 +1508,11 @@ video {
   overflow-wrap: break-word;
   word-break: break-all;
 }
+
+.hidden1 {
+  opacity: 0;
+}
+
+.visible1 {
+  opacity: 1;
+}
