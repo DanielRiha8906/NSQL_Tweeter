@@ -19,11 +19,11 @@ def get_user():
     return None
 @app.route("/") 
 def home():
-    # try:
-    #     page = int(session['home_pages_coefficient'])
-    # except KeyError:
-    #     session['home_pages_coefficient'] = 0
-    #     page = 0
+    try:
+        page = int(session['home_pages_coefficient'])
+    except KeyError:
+        session['home_pages_coefficient'] = 0
+        page = 0
     quacks = db.global_recent_twenty_quacks(session['home_pages_coefficient'])
     posts = load_20_quacks(quacks)
     if get_user() is None:
@@ -53,6 +53,7 @@ def about():
 @app.route("/delete/<int:quack_id>", methods=["GET","POST"])
 def delete_quack(quack_id):
     """Metoda pro vymazani quacku na FrontEndu provazanim s metodou z BackEndu. Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. 
+    @quack_id: ID quacku, ktery chceme vymazat
     """
     print('deleted succsessfully')
     user_id = session['user_id']
@@ -64,6 +65,30 @@ def delete_quack(quack_id):
         flash('Your quack has been deleted!', 'success')
         return redirect("/profile")
 
+@app.route("/like/<int:quack_id>", methods=["GET","POST"])
+def like_quack(quack_id):
+    """Metoda pro like/unlike na FrontEndu provazanim s metodou z BackEndu. Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. 
+    @quack_id: ID quacku, ktery chceme like/unlike
+    """
+    user_id = session['user_id']
+    if user_id is None:
+        flash('You cannot like/unlike a quack, if you are not logged in!', 'danger')
+        return redirect("/login")
+    elif db.quacks.find_one({"_id": quack_id}) is None:
+        flash('Quack does not exist!', 'danger')
+        print('quack does not exist')
+        return redirect (request.referrer)
+    elif db.is_quack_liked(quack_id, user_id) is True:
+        db.unlike_quack(user_id,quack_id)
+        flash('Quack has been unliked!', 'success')
+        print('quack has been unliked')
+        return redirect (request.referrer)
+    elif db.is_quack_liked(quack_id,user_id) is False:
+        db.like_quack(user_id,quack_id)
+        flash('Quack has been liked!', 'success')
+        print('quack has been liked')
+        return redirect (request.referrer)
+        
 @app.route("/quack", methods=["GET", "POST"])
 def post_quack():
     """Metoda pro postovani novych quacku na FrontEndu provazanim s metodou z BackEndu.
@@ -88,7 +113,9 @@ def post_quack():
 
 @app.route('/<page>/next', methods=["GET"])
 def next_page(page):
-    print('next page')
+    """Funkce pro presun na dalsi stranku.
+    @page: cislo stranky, kterou chceme presunout
+    """
     if page == 'home':
         session['home_pages_coefficient'] += 1
         return redirect('/')
@@ -98,6 +125,9 @@ def next_page(page):
 
 @app.route('/<page>/previous', methods=["GET"])
 def previous_page(page):
+    """Funkce pro presun na predchozi stranku.
+    @page: cislo stranky, kterou chceme presunout
+    """
     if page == 'home':
         if session['home_pages_coefficient'] == 0:
             return redirect('/')

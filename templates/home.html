@@ -24,7 +24,8 @@
       post.likes }} ducks has liked this post</span>
     <!---- Duck Button --->
     <div class="absolute bottom-4 right-4">
-      <button type="button"
+      <a href="/like/{{ post.id }}" method="post">
+        <button type="button"
         class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-600 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700">
         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20" height="18"
           viewBox="0 0 1280.000000 1086.000000" preserveAspectRatio="xMidYMid meet">
@@ -65,6 +66,7 @@
         </svg>
         <span class="sr-only">QUACK</span>
       </button>
+      </a>
     </div>
   </div>
   {% endfor %}

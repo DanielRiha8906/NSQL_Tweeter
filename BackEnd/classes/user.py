@@ -117,34 +117,54 @@ class F:
             return None
         return user
 
-    def upvote_quack(self, user_id, quack_id):
+    def like_quack(self, user_id, quack_id):
         """Funkce umoznuje uzivateli interagovat s quackem. Prida ID quacku do pole likedQuacks daneho uzivatele a vice versa.
         @user_id: ID aktualniho uzivatele
         @quack_id: ID quacku, ktery chce uzivatel "likenout"
         """
-        user = self.users.find_one({"_id": user_id})
-        if user is None:
-            print("You are not logged in!")
-            return None
         if self.quacks.find_one({"_id": quack_id}) is None:
-            print("You cannot upvote a quack that does not exist!")
+            print("You cannot like a quack that does not exist!")
             return None
-        if user_id in self.quacks.find_one({"_id": quack_id}).get("likedBy"):
-            print(
-                "You have already upvoted this quack, do you want to cancel your upvote?"
-            )
-            return False
-        self.users.update_one({"_id": user_id}, {"$push": {"upvotedQuacsk": quack_id}})
-        self.quacks.update_one(
-            {"_id": quack_id}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": user_id}}
-        )
+
+        self.users.update_one({"_id": user_id}, {"$push": {"likedQuacks": quack_id}})
+        self.quacks.update_one({"_id": quack_id}, {"$inc": {"likes": 1}})
+    def unlike_quack(self, user_id, quack_id):
+        """Funkce umoznuje uzivateli interagovat s quackem. Odebere ID quacku z pole likedQuacks daneho uzivatele a vice versa.
+        @user_id: ID aktualniho uzivatele
+        @quack_id: ID quacku, ktery chce uzivatel "unlikenout"
+        """
+        if self.quacks.find_one({"_id": quack_id}) is None:
+            print("You cannot dislike a quack that does not exist!")
+            return None
+
+        self.users.update_one({"_id": user_id}, {"$pull": {"likedQuacks": quack_id}})
+        self.quacks.update_one({"_id": quack_id}, {"$inc": {"likes": -1}})
+    
+    def my_liked_posts(self, user_id):
+        """Funkce vraci pole ID quacku, ktere uzivatel likenul.
+        @user_id: ID aktualniho uzivatele
+        """
+        uzivatel = self.users.find_one({"_id": user_id})
+        prispevky = uzivatel.get("likedQuacks")
+        return prispevky
+
+    def is_quack_liked(self, quack_id, userID):
+        """Funkce kontroluje zdali je dany quack uzivatelem jiz olikeovany.
+        @quack_id: ID quacku, ktery chceme overit
+        @userID: ID aktualniho uzivatele
+        """
+        quacks_liked = self.my_liked_posts(userID)
+        if quack_id in quacks_liked:
+            return True
+        return False
+
 
     def register_user(self, username, password):
         """Funkce pro vytvoreni noveho uzivatele.
         @username: uzivatelske jmeno, ktere klient zadal na vstupu
         @password: heslo, ktere klient zadal na vstupu
         """
-        if self.users.find_one({"username": username}) is not None:
+        if self.users.find_one({"userName": username}) is not None:
             print("This username is already taken!")
             return None
 
@@ -152,8 +172,9 @@ class F:
         latest_id = latest_user.get("_id")
         user = {
             "_id": latest_id + 1,
-            "username": username,
+            "userName": username,
             "password": password,
+            "likedQuacks": [],
         }
         self.users.insert_one(user)
 
