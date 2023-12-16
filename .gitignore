@@ -7,6 +7,7 @@ venv/
 .vscode/
 
 # BackEnd
+BackEnd/classes/.env
 BackEnd/.env
 BackEnd/__init__.py
 BackEnd/classes/__pycache__

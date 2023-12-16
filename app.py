@@ -37,7 +37,8 @@ def home():
             return render_template('home.html', posts=posts)
         else:
             user = account_name['username']
-            return render_template('home.html', posts=posts, account_name=user)
+            user_likes = db.my_liked_posts(session['user_id'])
+            return render_template('home.html', posts=posts, account_name=user, user_likes=user_likes)
     if request.method == "POST":
         return post_quack('home')  
 
@@ -113,8 +114,9 @@ def profile():
         user = account_name['username']
         page = session['profile_pages_coefficient']
         posts = load_20_quacks(db.my_recent_twenty_quacks(int(user_id), page))
+        user_likes = db.my_liked_posts(session['user_id'])
         return render_template('profile.html',
-                               posts=posts, account_name=user, title=user)
+                               posts=posts, account_name=user, title=user, user_likes=user_likes)
 
 
 @app.route("/login", methods=["GET", "POST"])

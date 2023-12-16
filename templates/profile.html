@@ -1,8 +1,5 @@
 {% extends 'layout.html' %} {% block content%}
 <div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5">
-  <div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5 bg-gray-800">
-    <div class="px-10 py-10 border-transparent"></div>
-  </div>
   {% for post in posts %}
   <div class="px-10 py-10 border rounded-lg border-gray-200 relative">
     <a href="#" class="group block flex-shrink-0">
@@ -23,8 +20,9 @@
     </p>
     <!--- Like Button - Quack button --->
     <span
-      class=" absolute bottom-7 right-12 px-7 text-white text-sm leading-5 font-medium hover:text-blue-600 flex justify-end">{{
-      post.likes}} ducks has liked this post</span>
+      class=" absolute bottom-7 right-12 px-7 text-white text-sm leading-5 font-medium hover:text-blue-600 flex justify-end">
+      {{ "{} ducks has liked this post".format("You included, {}".format(post.likes) if post.id in user_likes else post.likes) }}
+    </span>
     <div class="absolute bottom-4 right-4">
       <a href="/like/{{ post.id }}" method="post">
       <button type="button"

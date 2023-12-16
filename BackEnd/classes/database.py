@@ -29,7 +29,7 @@ class DB:
             "_id": latest_id + 1,
             "user_id": user_id,
             "username": current_user["username"],
-            "quack_content": body,
+            "quack_content": self.replace_f_words(body),
             "date_quacked": datetime.now().isoformat(),
             "likes": 0
         }
@@ -144,7 +144,10 @@ class DB:
         $return: pole ID quacku, ktere uzivatel likenul
         """
         user = self.users.find_one({"_id": user_id})
-        posts = user.get("liked_quacks")
+        try:
+            posts = user["liked_quacks"]
+        except AttributeError:
+            posts = []
         return posts
 
 
@@ -219,3 +222,12 @@ class DB:
         limit = 20
         paginated_quacks = self.quacks.find(filter).sort("date_quacked", -1).skip(offset).limit(limit)
         return paginated_quacks
+    
+
+    def replace_f_words(self, post):
+        """Funkce pro nahradeni f-words na vstupu."""
+        replace_dict = {'fuck': 'duck', 'fucking': 'ducking', 'fucker': 'ducker'}
+        for word, replacement in replace_dict.items():
+            post = post.replace(word, replacement)
+            post = post.replace(word.upper(), replacement.capitalize())
+        return post
