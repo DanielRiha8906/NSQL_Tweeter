@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect, flash, session
-from BackEnd.classes.userdocker import DB
+from BackEnd.classes.database import DB
 from redis import Redis
 from pymongo import MongoClient
 from datetime import datetime
@@ -31,7 +31,7 @@ def home():
                 cache_it()
                 posts = load_20_quacks(db.global_recent_twenty_quacks(0))
         if page > 0:
-            posts = load_20_quacks(db.global_recent_twenty_quacks(session['home_pages_coefficient']))
+            posts = load_20_quacks(db.global_recent_twenty_quacks(page))
         account_name = get_user()
         if account_name is None:
             return render_template('home.html', posts=posts)
@@ -56,17 +56,13 @@ def about():
         account_name = db.who_am_i(session['user_id'])
         user = account_name['username']
         return render_template('about.html',title='About', account_name=user)
-    
-
-@app.route("/like/<int:quack_id>", methods=["GET", "POST"])
-def like(quack_id):
-    user_id = session["user_id"]
-    upvote = db.upvote_quack(user_id, quack_id)
 
 
 @app.route("/delete/<int:quack_id>", methods=["GET","POST"])
 def delete_quack(quack_id):
-    """Metoda pro vymazani quacku na FrontEndu provazanim s metodou z BackEndu. Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. 
+    """Metoda pro vymazani quacku na FrontEndu provazanim s metodou z BackEndu.
+    Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage.
+    @quack_id: ID quacku, ktery chceme vymazat
     """
     user_id = session['user_id']
     if user_id is None:
@@ -79,9 +75,32 @@ def delete_quack(quack_id):
         return redirect("/profile")
 
 
+@app.route("/like/<int:quack_id>", methods=["GET","POST"])
+def like_quack(quack_id):
+    """Metoda pro like/unlike na FrontEndu provazanim s metodou z BackEndu. Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. 
+    @quack_id: ID quacku, ktery chceme like/unlike
+    """
+    user_id = session['user_id']
+    if user_id is None:
+        flash('You cannot like/unlike a quack, if you are not logged in!', 'danger')
+        return redirect("/login")
+    elif db.quacks.find_one({"_id": quack_id}) is None:
+        flash('Quack does not exist!', 'danger')
+        return redirect (request.referrer)
+    elif db.is_quack_liked(quack_id, user_id) is True:
+        db.unlike_quack(user_id,quack_id)
+        flash('Quack has been unliked!', 'success')
+        return redirect (request.referrer)
+    elif db.is_quack_liked(quack_id,user_id) is False:
+        db.like_quack(user_id,quack_id)
+        flash('Quack has been liked!', 'success')
+        return redirect (request.referrer)
+
+
 @app.route("/profile", methods=["GET", "POST"])
 def profile():
-    """Metoda pro zobrazovani profilu. Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage."""
+    """Metoda pro zobrazovani profilu. Kontrola jestli je uzivatel prihlasen,
+    pokud ne tak ho odkaze na loginpage."""
     if request.method == "POST":
         cache_it()
         return post_quack('profile')
@@ -92,8 +111,10 @@ def profile():
         
         account_name = db.who_am_i(session['user_id'])
         user = account_name['username']
-        posts = load_20_quacks(db.my_recent_twenty_quacks(int(user_id), session['profile_pages_coefficient']))
-        return render_template('profile.html', posts=posts, account_name=user, title=user)
+        page = session['profile_pages_coefficient']
+        posts = load_20_quacks(db.my_recent_twenty_quacks(int(user_id), page))
+        return render_template('profile.html',
+                               posts=posts, account_name=user, title=user)
 
 
 @app.route("/login", methods=["GET", "POST"])
@@ -133,6 +154,9 @@ def register():
 
 @app.route("/<page>/next", methods=["GET"])
 def next_page(page):
+    """Funkce pro presun na dalsi stranku.
+    @page: cislo stranky, kterou chceme presunout
+    """
     if page == 'home':
         session['home_pages_coefficient'] += 1
         if not can_i_go_next(session['home_pages_coefficient']):
@@ -147,6 +171,9 @@ def next_page(page):
 
 @app.route("/<page>/previous", methods=["GET"])
 def previous_page(page):
+    """Funkce pro presun na predchozi stranku.
+    @page: cislo stranky, kterou chceme presunout
+    """
     if page == 'home':
         if session['home_pages_coefficient'] == 0:
             return redirect('/')
@@ -174,7 +201,8 @@ def load_20_quacks(quacks):
             'author': quack['username'],
             'title': "title",
             'content': quack['quack_content'],
-            'date_posted': datetime.strptime(quack['date_quacked'], "%Y-%m-%dT%H:%M:%S.%f").strftime("%H:%M - %d/%m/%Y"),
+            'date_posted': datetime.strptime(
+                    quack['date_quacked'],"%Y-%m-%dT%H:%M:%S.%f").strftime("%H:%M - %d/%m/%Y"),
             'likes': quack['likes'],
         } for quack in quacks]
 
@@ -197,7 +225,8 @@ def cached():
 
 def post_quack(to_page):
     """Metoda pro postovani novych quacku na FrontEndu provazanim s metodou z BackEndu.
-    Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage. A kontrola jestli neprekrocil maximalni delku quacku(255),
+    Kontrola jestli je uzivatel prihlasen, pokud ne tak ho odkaze na loginpage.
+    A kontrola jestli neprekrocil maximalni delku quacku(255),
     tento check je aktualne 'duplicitni'.
     """
     user_id = session["user_id"]
@@ -234,6 +263,7 @@ def can_i_go_next(page_number):
     if page_number < max_page:
         return True
     return False
+
 
 if __name__ == '__main__':
     app.run(host= "0.0.0.0", port=5000, debug=True)

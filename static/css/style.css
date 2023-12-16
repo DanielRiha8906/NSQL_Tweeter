@@ -1516,3 +1516,10 @@ video {
 .visible1 {
   opacity: 1;
 }
+
+.fixed-nav {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000;
+}

@@ -2,11 +2,9 @@ import pymongo
 from datetime import datetime
 
 
-
 class DB:
 
     def __init__(self, users, quacks):
-        # Ustanoveni connection k jednotlivym kolekcim
         self.users = users
         self.quacks = quacks
 
@@ -42,7 +40,8 @@ class DB:
     def del_quack(self, quack_id, user_id):
         """Funkce posila pozadavek na vymazani quacku podle ID.
         @quack_id: ID quacku, ktery chceme vymazat
-        @user_id: ID (aktualniho) uzivatele, ktery chce prispevek vymazat, pro overeni zda je puvodnim autorem
+        @user_id: ID (aktualniho) uzivatele, ktery chce prispevek vymazat,
+        pro overeni zda je puvodnim autorem
         """
         current_quack = self.quacks.find_one({"_id": quack_id})
         owner = current_quack["user_id"]
@@ -55,7 +54,8 @@ class DB:
 
 
     def update_bio(self, user_id, new_bio):
-        """Funkce posila pozadavek na updatenuti biografie uzivatele podle ID, prijima novou biografii.
+        """Funkce posila pozadavek na updatenuti biografie uzivatele podle ID,
+        prijima novou biografii.
         @user_id: ID (aktualniho) uzivatele, ktery chce biografii aktualizovat.
         @new_bio: obsah nove biografie
         """
@@ -76,15 +76,14 @@ class DB:
         """Funkce posila pozadavek na aktualizaci quacku podle ID, prijima novy obsah quacku.
         @quack_id: ID quacku, ktery chceme aktualizovat
         @new_content: novy obsah quacku ktery aktualizujeme
-        @user_id: ID (aktualniho) uzivatele, ktery chce prispevek aktualizovat, pro overeni zda je puvodnim autorem
+        @user_id: ID (aktualniho) uzivatele,
+        ktery chce prispevek aktualizovat, pro overeni zda je puvodnim autorem
         """
         current_quack = self.quacks.find_one({"_id": quack_id})
         quack_author = current_quack.get("user_id")
         if current_quack is None:
-            print("You cannot update a quack that does not exist!")
             return None
         if quack_author != user_id:
-            print("You cannot update a quack that is not yours!")
             return None
         filter = {"_id": quack_id}
         new_body = {"$set": {"quack_content": new_content}}
@@ -97,7 +96,6 @@ class DB:
         $return: vraci veskere jeho pridane quacky
         """
         if self.users.find_one({"_id": user_id}) is None or user_id is None:
-            print("You are not logged in!")
             return None
         my_quacks = self.quacks.find(user_id)
         return my_quacks
@@ -110,33 +108,59 @@ class DB:
         """
         user = self.users.find_one({"_id": user_id})
         if user is None:
-            print("You are not logged in!")
             return None
         return user
 
 
-    def upvote_quack(self, user_id, quack_id):
+    def like_quack(self, user_id, quack_id):
         """Funkce umoznuje uzivateli interagovat s quackem. Prida ID quacku do pole likedQuacks daneho uzivatele a vice versa.
         @user_id: ID aktualniho uzivatele
         @quack_id: ID quacku, ktery chce uzivatel "likenout"
         """
-        user = self.users.find_one({"_id": user_id})
-        if user is None:
-            print("You are not logged in!")
-            return False
         if self.quacks.find_one({"_id": quack_id}) is None:
-            print("You cannot upvote a quack that does not exist!")
+            return None
+
+        self.users.update_one({"_id": user_id}, {"$push": {"liked_quacks": quack_id}})
+        self.quacks.update_one({"_id": quack_id}, {"$inc": {"likes": 1}})
+        return 0
+
+
+    def unlike_quack(self, user_id, quack_id):
+        """Funkce umoznuje uzivateli interagovat s quackem. Odebere ID quacku z pole likedQuacks daneho uzivatele a vice versa.
+        @user_id: ID aktualniho uzivatele
+        @quack_id: ID quacku, ktery chce uzivatel "unlikenout"
+        """
+        if self.quacks.find_one({"_id": quack_id}) is None:
+            return None
+
+        self.users.update_one({"_id": user_id}, {"$pull": {"liked_quacks": quack_id}})
+        self.quacks.update_one({"_id": quack_id}, {"$inc": {"likes": -1}})
+        return 0
+
+
+    def my_liked_posts(self, user_id):
+        """Funkce vraci pole ID quacku, ktere uzivatel likenul.
+        @user_id: ID aktualniho uzivatele
+        $return: pole ID quacku, ktere uzivatel likenul
+        """
+        user = self.users.find_one({"_id": user_id})
+        posts = user.get("liked_quacks")
+        return posts
+
+
+    def is_quack_liked(self, quack_id, user_id):
+        """Funkce kontroluje zdali je dany quack uzivatelem jiz olikeovany.
+        @quack_id: ID quacku, ktery chceme overit
+        @userID: ID aktualniho uzivatele
+        $return: True, pokud je quack olikeovany, jinak False
+        """
+        quacks_liked = self.my_liked_posts(user_id)
+        try:
+            if quack_id in quacks_liked:
+                return True
+        except TypeError:
             return False
-        if user_id in self.quacks.find_one({"_id": quack_id}).get("likedBy"):
-            print(
-                "You have already upvoted this quack, do you want to cancel your upvote?"
-            )
-            return False
-        self.users.update_one({"_id": user_id}, {"$push": {"upvotedQuacsk": quack_id}})
-        self.quacks.update_one(
-            {"_id": quack_id}, {"$inc": {"upvotes": 1}, "$push": {"upvotedBy": user_id}}
-        )
-        return True
+        return False
 
 
     def register_user(self, username, password):
@@ -145,7 +169,6 @@ class DB:
         @password: heslo, ktere klient zadal na vstupu
         """
         if self.users.find_one({"username": username}) is not None:
-            print("This username is already taken!")
             return False
 
         else:
@@ -172,7 +195,6 @@ class DB:
         """
         user = self.users.find_one({"username": username, "password": password})
         if user is None:
-            print("Wrong username or password!")
             return False
         return user
 

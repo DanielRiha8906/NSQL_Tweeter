@@ -23,6 +23,7 @@
       class=" absolute bottom-7 right-12 px-7 text-white text-sm leading-5 font-medium hover:text-blue-600 flex justify-end">{{
       post.likes}} ducks has liked this post</span>
     <div class="absolute bottom-4 right-4">
+      <a href="/like/{{ post.id }}" method="post">
       <button type="button"
         class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-600 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700">
         <svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="20" height="18"
@@ -64,6 +65,7 @@
         </svg>
         <span class="sr-only">QUACK</span>
       </button>
+      </a>
     </div>
     <!--- Delete Button --->
     <div class="absolute top-4 right-4">
@@ -116,7 +118,7 @@ id="hover-form">
 <textarea name="quack_content"
   class="w-full p-2 text-white bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-blue-500"
   placeholder="What's on your mind?" oninput="handleInput(this)"></textarea>
-<button class="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
+  <button class="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
   type="submit">
   Post
 </button>
