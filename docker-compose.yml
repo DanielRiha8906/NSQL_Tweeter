@@ -16,7 +16,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - ./redisdata:/data
 
 
   redis-commander:
@@ -40,9 +40,8 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongo-db-data:/data/db
-
+      - ./mongodata:/data/db
 
 volumes:
-  redis-data:
-  mongo-db-data:
+  redisdata:
+  mongodata:
