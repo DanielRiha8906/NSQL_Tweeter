@@ -2,7 +2,7 @@ import pymongo
 from datetime import datetime
 
 
-class FD:
+class DB:
 
     def __init__(self, users, quacks):
         # Ustanoveni connection k jednotlivym kolekcim

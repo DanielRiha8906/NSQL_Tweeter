@@ -1,33 +1,59 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/style.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}">
     {% if title %}
     <title>QUACKER - {{title}}</title>
     {% else %}
     <title>Quacker</title>
     {% endif %}
 </head>
-<div>
-<body class="bg-nice">
-    <nav class="topnav">
-            <a class="nav-link" href="/">Home</a>
-            <a class="nav-link" href="about">About</a>
-            <a class="split" class="nav-link" href="profile">My Profile</a>
-            <a class="split" class="nav-link" href="login">Login</a>
+
+<body class="w-screen min-h-screen bg-gray-800 flex flex-col flex-grow">
+    <nav class="bg-gray-950 overflow-hidden h-[4rem] flex flex-row justify-between">
+        <div class="flex gap-5 items-center px-10 text-xl">
+            <a href="/"
+                class="block text-white text-center px-10 text-decoration-none text-xl font-bold hover:text-gray-700">Home</a>
+            <a href="about"
+                class="block text-white text-center px-10 text-decoration-none text-xl font-bold hover:text-gray-700">About</a>
+        </div>
+
+        <div class="flex items-center text-xl text-white space-x-5 px-10">
+            {% if account_name %}
+            <a href="profile" class=" hover:text-gray-700 font-bold">{{ account_name }}</a>
+            <a href="logout" class=" hover:text-gray-700 font-bold">Log out</a>
+            {% else %}
+            <a href="login" class="hover:text-gray-700 font-bold">Login</a>
+            {% endif %}
+        </div>
     </nav>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class=flashes>
-                {% for message in messages %}
-                <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
+    {% with messages = get_flashed_messages(category_filter=["success"]) %}
+    {% if messages %}
+    <div class="flex justify-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-700 dark:text-green-400" role="alert">
+        {% for message in messages %}
+        <span class=> {{ message }}</span>
+        {% endfor %}
         {% endif %}
+    </div>
     {% endwith %}
-    <div class="conatiner">{%block content%} {% endblock %}</div>
-    <div class="footer">
-        <p>Copyright &copy; Duckers 2023</p>
-      </div>
+    
+    {% with messages = get_flashed_messages(category_filter=["danger"]) %}
+    {% if messages %}
+    <div class="flex justify-center p-4 mb-4 text-sm text-red-800 rounded-lg bg-green-50 dark:bg-gray-700 dark:text-red-600" role="alert">
+        {% for message in messages %}
+        <span class=> {{ message }}</span>
+        {% endfor %}
+        {% endif %}
+    </div>
+    {% endwith %}
+    
+    <div>
+        {% block content %}{% endblock %}
+    </div>
+    <footer class="fixed bottom-0 left-0 right-0 bg-gray-900 text-center py-0">
+        <p class="text-gray-500">&copy; Quacker 2023</p>
+    </footer>
 </body>
+
 </html>
