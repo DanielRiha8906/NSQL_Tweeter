@@ -177,13 +177,12 @@ def register():
     if request.method == "POST":
         user = str(request.form['username'])
         passw = str(request.form['password'])
-        reg = db.register_user(user, passw)
-        if reg != None:
-            flash('You are now registered and can log in', 'success')
-            return redirect('/login')
-        else:
+        if db.register_user(user, passw) is False:
             flash('The username is already taken', 'danger')
             return redirect('/register')
+        else:
+            flash('You are now registered and can log in', 'success')
+            return redirect('/login')
     else:
         return render_template('register.html')
 

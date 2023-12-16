@@ -166,8 +166,7 @@ class F:
         """
         if self.users.find_one({"userName": username}) is not None:
             print("This username is already taken!")
-            return None
-
+            return False
         latest_user = self.users.find_one(sort=[("_id", pymongo.DESCENDING)])
         latest_id = latest_user.get("_id")
         user = {
