@@ -11,7 +11,7 @@
 </head>
 
 <body class="w-screen min-h-screen bg-gray-800 flex flex-col flex-grow">
-    <nav class="bg-gray-950 overflow-hidden h-[4rem] flex flex-row justify-between">
+    <nav class="bg-gray-950 z-50 overflow-hidden h-[4rem] flex flex-row justify-between fixed top-0 left-0 right-0">
         <div class="flex gap-5 items-center px-10 text-xl">
             <a href="/"
                 class="block text-white text-center px-10 text-decoration-none text-xl font-bold hover:text-gray-700">Home</a>
@@ -30,7 +30,7 @@
     </nav>
     {% with messages = get_flashed_messages(category_filter=["success"]) %}
     {% if messages %}
-    <div class="flex justify-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-700 dark:text-green-400" role="alert">
+    <div class="fixed top-14 left-0 right-0 z-50 flex justify-center p-4 mb-0 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-700 dark:text-green-400" role="alert">
         {% for message in messages %}
         <span class=> {{ message }}</span>
         {% endfor %}
@@ -47,7 +47,9 @@
         {% endif %}
     </div>
     {% endwith %}
-    
+    <div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5">
+        <div class="flex justify-center flex-col w-[40rem] mx-auto mb-20 gap-5 bg-gray-800">
+        </div>
     <div>
         {% block content %}{% endblock %}
     </div>
