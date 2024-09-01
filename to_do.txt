@@ -1,9 +1,0 @@
-###
-
-Na Docker Mongo funguje register - není přidáno tlačítko, musíte zadat ručně
-localhost:5000/register
-
-zkoušel jsem heslo 1234, asi má problém s int,
-nick=Duck, pass=quack funguje
-
-###

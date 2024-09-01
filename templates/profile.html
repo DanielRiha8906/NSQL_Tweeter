@@ -9,7 +9,7 @@
             {{ post.author }}
             <span
               class="text-sm leading-5 font-medium text-gray-400 group-hover:text-gray-300 transition ease-in-out duration-150">
-              @{{ post.author }} {{ post.date_posted }}
+              {{ post.date_posted }}
             </span>
           </p>
         </div>
@@ -20,8 +20,9 @@
     </p>
     <!--- Like Button - Quack button --->
     <span
-      class=" absolute bottom-7 right-12 px-7 text-white text-sm leading-5 font-medium hover:text-blue-600 flex justify-end">{{
-      post.likes}} ducks has liked this post</span>
+      class=" absolute bottom-7 right-12 px-7 text-white text-sm leading-5 font-medium hover:text-blue-600 flex justify-end">
+      {{ "{} ducks has liked this post".format("You included, {}".format(post.likes) if post.id in user_likes else post.likes) }}
+    </span>
     <div class="absolute bottom-4 right-4">
       <a href="/like/{{ post.id }}" method="post">
       <button type="button"
@@ -78,16 +79,6 @@
         </svg>
         <span class="sr-only">Delete</span>
       </button></a>
-      <!--- Edit Button --->
-      <button type="button"
-        class="text-white bg-blue-500 hover:bg-blue-600 focus:ring-4 focus:outline-none focus:ring-blue-600 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center me-2 dark:bg-blue-500 dark:hover:bg-blue-600 dark:focus:ring-blue-700">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-          class="w-4 h-4">
-          <path stroke-linecap="round" stroke-linejoin="round"
-            d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-        </svg>
-        <span class="sr-only">Edit</span>
-      </button>
     </div>
   </div>
   {% endfor %}
@@ -122,16 +113,37 @@
   <div class="px-10 py-10 border-transparent"></div>
 </div>
 <!--- Post Form + Button --->
-<form method="post" action="/quack"
-  class="fixed text-white bottom-6 bg-gray-900 left-0 right-0 p-2 opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col items-end"
-  id="hover-form">
-  <textarea name="quack_content"
-    class="w-full p-2 text-white bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-blue-500"
-    placeholder="What's on your mind?"></textarea>
+<form method="post" action="/profile"
+class="fixed bottom-6 text-white bg-gray-900 left-0 right-0 p-2 opacity-0 hover:opacity-100 transition-opacity duration-300 flex flex-col items-end"
+id="hover-form">
+<textarea name="quack_content"
+  class="w-full p-2 text-white bg-gray-800 border border-gray-700 rounded focus:outline-none focus:border-blue-500"
+  placeholder="What's on your mind?" oninput="handleInput(this)"></textarea>
   <button class="mt-2 px-4 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600"
-    type="submit">
-    Post
-  </button>
+  type="submit">
+  Post
+</button>
 </form>
+<script>
+  var form = document.getElementById('hover-form');
+  var textarea = document.querySelector('textarea');
 
+  form.addEventListener('mouseover', function() {
+    form.style.opacity = '1';
+  });
+
+  form.addEventListener('mouseleave', function() {
+    if (textarea.value.trim() === '') {
+      form.style.opacity = '0';
+    }
+  });
+
+  textarea.addEventListener('input', function() {
+    if (textarea.value.trim() !== '') {
+      form.style.opacity = '1';
+    } else {
+      form.style.opacity = '0';
+    }
+  });
+</script>
 {% endblock content %}
