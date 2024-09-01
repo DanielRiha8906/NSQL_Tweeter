@@ -75,6 +75,33 @@ def delete_quack(quack_id):
         cache_it()
         return redirect("/profile")
 
+@app.route('/<page>/next', methods=["GET"])
+def next_page(page):
+    """Funkce pro presun na dalsi stranku.
+    @page: cislo stranky, kterou chceme presunout
+    """
+    if page == 'home':
+        session['home_pages_coefficient'] += 1
+        return redirect('/')
+    elif page == 'profile':
+        session['profile_pages_coefficient'] += 1
+        return redirect('/profile')
+
+@app.route('/<page>/previous', methods=["GET"])
+def previous_page(page):
+    """Funkce pro presun na predchozi stranku.
+    @page: cislo stranky, kterou chceme presunout
+    """
+    if page == 'home':
+        if session['home_pages_coefficient'] == 0:
+            return redirect('/')
+        session['home_pages_coefficient'] -= 1
+        return redirect('/')
+    elif page == 'profile':
+        if session['profile_pages_coefficient'] == 0:
+            return redirect('/profile')
+        session['profile_pages_coefficient'] -= 1
+        return redirect('/profile')
 
 @app.route("/like/<int:quack_id>", methods=["GET","POST"])
 def like_quack(quack_id):

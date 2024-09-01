@@ -213,6 +213,7 @@ class DB:
 
 
     def my_recent_twenty_quacks(self, user_id, range):
+    def my_recent_twenty_quacks(self, user_id, range):
         """Funkce vraci "nejcerstvejsich" 20 quacku pridanych konkretnim uzivatelem.
         @user_id: ID uzivatele, jehoz quacks chceme zobrazit
         $return: kolekce 20 quacku, ktere jsou nejnovejsi u konkretniho uzivatele
